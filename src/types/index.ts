@@ -49,7 +49,7 @@ export type DailyMailAuthor = 'ankur' | 'her';
 export interface DailyMailEntry {
   id: string;
   author: DailyMailAuthor;
-  authorLabel: string;          // "From Ankur" / "From Her"
+  authorLabel: string;          // "From Ankur" / "From Arti"
   subject: string;              // Like an email subject line
   body: string[];               // Paragraphs
   deployAt: string;             // ISO 8601 datetime — revealed only after this moment

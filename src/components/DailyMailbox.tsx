@@ -116,7 +116,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
       const updated: DailyMailEntry = {
         ...editingMail,
         author,
-        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Her',
+        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Arti',
         subject: subject.trim(),
         body: paras.length > 0 ? paras : [message.trim()],
         deployAt: new Date(deployAt).toISOString(),
@@ -129,7 +129,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
       const newMail: DailyMailEntry = {
         id: `mail-${Date.now()}`,
         author,
-        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Her',
+        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Arti',
         subject: subject.trim(),
         body: paras.length > 0 ? paras : [message.trim()],
         deployAt: new Date(deployAt).toISOString(),
@@ -443,7 +443,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
                         : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
                     }`}
                   >
-                    <span>From Her 🌸</span>
+                    <span>From Arti 🌸</span>
                   </button>
                 </div>
               </div>

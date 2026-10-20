@@ -1,7 +1,7 @@
 import { Letter, PartnerConfig } from '../types';
 
 export const PARTNER_CONFIG: PartnerConfig = {
-  partnerName: 'My Favorite Person',
+  partnerName: 'Arti',
   senderName: 'Ankur',
   anniversaryDate: '2024-01-01',
   welcomeMessage: 'A special sanctuary of letters written just for you, whenever your heart needs one.',
