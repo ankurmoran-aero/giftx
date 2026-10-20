@@ -18,25 +18,26 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
     setHugSent(true);
     confetti({
       particleCount: 80,
-      spread: 70,
-      origin: { y: 0.7 },
+      spread: 75,
+      origin: { y: 0.6 },
       colors: ['#F4C2C2', '#ffffff', '#fb7185', '#000000'],
     });
     setTimeout(() => setHugSent(false), 3000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-fade-in">
-      {/* Outer Envelope / Letter Container in Black with Baby Pink Rim */}
-      <div className="relative w-full max-w-2xl bg-black text-white rounded-3xl shadow-2xl border-2 border-[#F4C2C2]/60 overflow-hidden my-6">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+      
+      {/* Real Letter Stationery in Jet Black with Baby Pink Rim */}
+      <div className="relative w-full max-w-2xl bg-[#09090b] text-white rounded-[32px] shadow-2xl border-2 border-[#F4C2C2]/50 overflow-hidden my-6">
         
-        {/* Baby Pink Top Accent Bar */}
-        <div className="h-2.5 bg-[#F4C2C2]" />
+        {/* Baby Pink Top Stationery Line */}
+        <div className="h-2 bg-[#F4C2C2]" />
 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors z-20 border border-zinc-700"
+          className="absolute top-5 right-5 p-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors z-20 border border-zinc-750"
           aria-label="Close letter"
         >
           <X className="w-5 h-5" />
@@ -44,49 +45,78 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
 
         {/* Letter Body */}
         <div className="p-6 sm:p-10 relative">
-          {/* Subtle Paper Lines / Texture Effect */}
-          <div className="absolute inset-x-8 inset-y-12 pointer-events-none opacity-[0.04] bg-[repeating-linear-gradient(transparent,transparent_28px,#F4C2C2_28px,#F4C2C2_29px)]" />
+          
+          {/* Subtle Black Letter Paper Lines Effect */}
+          <div className="absolute inset-x-8 inset-y-12 pointer-events-none opacity-[0.05] bg-[repeating-linear-gradient(transparent,transparent_30px,#F4C2C2_30px,#F4C2C2_31px)]" />
 
-          {/* Letter Header */}
-          <div className="text-center pb-6 border-b border-zinc-800">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-zinc-900 text-[#F4C2C2] text-xs font-bold mb-3 border border-[#F4C2C2]/40">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{letter.categoryLabel}</span>
+          {/* Letter Head with Date & Stamp */}
+          <div className="flex items-center justify-between pb-6 border-b border-zinc-850">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-sm shadow-md">
+                {letter.sealEmoji || '💌'}
+              </span>
+              <div className="text-left">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-[#F4C2C2] block">
+                  {letter.categoryLabel} Letter
+                </span>
+                <span className="text-xs text-zinc-400 font-mono">Special Delivery</span>
+              </div>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white tracking-tight">
+
+            <div className="text-right">
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-zinc-900 border border-[#F4C2C2]/40 text-[#F4C2C2] text-xs font-bold">
+                <Sparkles className="w-3 h-3" />
+                <span>Private & Confidential</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Salutation & Title in Special Serif Font */}
+          <div className="mt-8">
+            <p className="font-cursive text-xl text-[#F4C2C2] tracking-wide">
+              Dearest Love,
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-serif font-black text-white tracking-tight mt-1 leading-snug">
               {letter.title}
             </h2>
-            <p className="text-xs sm:text-sm text-[#F4C2C2] italic mt-1.5 font-serif">
+            <p className="text-xs sm:text-sm text-zinc-400 font-serif italic mt-1">
               ~ {letter.subtitle} ~
             </p>
           </div>
 
-          {/* Letter Content Paragraphs */}
-          <div className="mt-8 space-y-5 font-serif text-zinc-200 text-base sm:text-lg leading-relaxed sm:leading-loose max-w-xl mx-auto">
+          {/* Letter Content Paragraphs in Black Stationery with Baby Pink Accents */}
+          <div className="mt-8 space-y-5 font-serif text-zinc-200 text-base sm:text-lg leading-relaxed sm:leading-loose">
             {letter.content.map((paragraph, idx) => (
-              <p key={idx} className="first-letter:text-2xl first-letter:font-bold first-letter:text-[#F4C2C2]">
+              <p 
+                key={idx} 
+                className="first-letter:text-3xl first-letter:font-bold first-letter:text-[#F4C2C2] first-letter:mr-1"
+              >
                 {paragraph}
               </p>
             ))}
           </div>
 
-          {/* Polaroid Memory Photo Attachment */}
+          {/* Cleanly Cropped Polaroid Memory Photo Attachment */}
           {letter.polaroid && (
-            <div className="mt-8 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <div 
-                className="bg-zinc-950 p-3 pb-5 rounded-md shadow-2xl border border-zinc-800 max-w-xs transform hover:rotate-0 transition-transform duration-300 cursor-pointer group"
+                className="bg-[#121214] p-3 pb-5 rounded-2xl shadow-2xl border border-zinc-800 max-w-xs transform hover:rotate-0 transition-transform duration-300 group"
                 style={{ transform: `rotate(${letter.polaroid.rotationDeg || 0}deg)` }}
               >
-                {/* Simulated Baby Pink Washi Tape */}
-                <div className="w-16 h-4 bg-[#F4C2C2] mx-auto -mt-5 mb-2 rounded-sm shadow-sm opacity-90" />
-                <div className="overflow-hidden rounded border border-zinc-800">
+                {/* Baby Pink Washi Tape Header */}
+                <div className="w-16 h-4 bg-[#F4C2C2] mx-auto -mt-5 mb-2.5 rounded-sm shadow-md opacity-90" />
+                
+                {/* Photo with rounded crop and aspect ratio */}
+                <div className="overflow-hidden rounded-xl border border-zinc-800 aspect-square w-64 bg-zinc-950">
                   <img
                     src={letter.polaroid.url}
                     alt={letter.polaroid.caption}
-                    className="w-full h-52 object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-[#F4C2C2] font-serif italic">
+                
+                {/* Handwritten Caption */}
+                <div className="flex items-center justify-center gap-1.5 mt-3 text-xs text-[#F4C2C2] font-cursive text-sm">
                   <Camera className="w-3.5 h-3.5 text-[#F4C2C2]" />
                   <span>{letter.polaroid.caption}</span>
                 </div>
@@ -94,15 +124,15 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
             </div>
           )}
 
-          {/* Sign Off */}
-          <div className="mt-10 pt-6 border-t border-zinc-800 flex flex-col items-end text-right font-serif">
-            <p className="text-sm text-zinc-400 italic">{letter.signOff || 'With all my love,'}</p>
-            <p className="text-xl sm:text-2xl font-bold text-[#F4C2C2] mt-1 signature-font">
+          {/* Handwritten Sign Off in Caveat Font */}
+          <div className="mt-10 pt-6 border-t border-zinc-850 flex flex-col items-end text-right">
+            <p className="text-sm text-zinc-400 font-serif italic">{letter.signOff || 'With all my love,'}</p>
+            <p className="text-2xl sm:text-3xl font-cursive font-bold text-[#F4C2C2] mt-1 select-none">
               {letter.senderName || 'Ankur'}
             </p>
           </div>
 
-          {/* Secret Hidden Note / P.S. Reveal */}
+          {/* Secret P.S. Scratch Note in Black & Baby Pink */}
           {letter.secretNote && (
             <div className="mt-8">
               {!showSecret ? (
@@ -127,7 +157,7 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
             </div>
           )}
 
-          {/* Bottom Action: Send Virtual Hug */}
+          {/* Bottom Actions: Hug & Put Back */}
           <div className="mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <button
               onClick={handleSendHug}

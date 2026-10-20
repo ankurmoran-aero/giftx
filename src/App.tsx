@@ -4,14 +4,17 @@ import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
 import { CuteDashboard } from './components/CuteDashboard';
 import { Header } from './components/Header';
 import { EnvelopeCard } from './components/EnvelopeCard';
+import { FocusedLetterView } from './components/FocusedLetterView';
+import { ShakeToOpenModal } from './components/ShakeToOpenModal';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
 import { AddLetterModal } from './components/AddLetterModal';
-import { Plus, Sparkles, Mail, Home } from 'lucide-react';
+import { Plus, Sparkles, Mail, Home, LayoutList, Layers } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function App() {
   const [activeView, setActiveView] = useState<'dashboard' | 'letters'>('dashboard');
+  const [letterDisplayMode, setLetterDisplayMode] = useState<'one-by-one' | 'all-grid'>('one-by-one');
 
   const [letters, setLetters] = useState<Letter[]>(() => {
     const saved = localStorage.getItem('giftx_letters');
@@ -37,7 +40,11 @@ export function App() {
     return [];
   });
 
-  const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
+  // State for the shake-to-open interaction
+  const [shakeLetter, setShakeLetter] = useState<Letter | null>(null);
+  // State for reading the fully opened letter
+  const [readLetter, setReadLetter] = useState<Letter | null>(null);
+
   const [selectedCategory, setSelectedCategory] = useState<MoodCategory>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -57,16 +64,17 @@ export function App() {
     return letters.filter((l) => l.category === selectedCategory);
   }, [letters, selectedCategory]);
 
-  const handleOpenLetter = (letter: Letter) => {
-    setSelectedLetter(letter);
+  // When she clicks on an envelope, initiate the Shake-to-Open stage
+  const handleInitiateOpen = (letter: Letter) => {
+    setShakeLetter(letter);
+  };
+
+  // When 3 shakes complete, mark as opened and display the Black Letter Reader
+  const handleShakeComplete = (letter: Letter) => {
+    setShakeLetter(null);
+    setReadLetter(letter);
     if (!openedLetterIds.includes(letter.id)) {
       setOpenedLetterIds((prev) => [...prev, letter.id]);
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#F4C2C2', '#ffffff', '#000000', '#f43f5e'],
-      });
     }
   };
 
@@ -85,6 +93,7 @@ export function App() {
 
   const handleEnterVault = () => {
     setActiveView('letters');
+    setLetterDisplayMode('one-by-one');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -94,7 +103,7 @@ export function App() {
       <FloatingHearts />
 
       {/* Top Glassmorphic Navbar */}
-      <header className="sticky top-0 z-40 bg-[#F4C2C2]/80 backdrop-blur-md border-b border-black/10">
+      <header className="sticky top-0 z-40 bg-[#F4C2C2]/85 backdrop-blur-md border-b border-black/10">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           
           {/* Logo / Switch to Dashboard */}
@@ -105,11 +114,11 @@ export function App() {
             }}
             className="flex items-center gap-2 cursor-pointer group select-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform overflow-hidden">
+            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform overflow-hidden p-1 border border-black">
               <img
                 src="/assets/images/cat-love-letter.jpg"
                 alt="Cat Love"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-lg"
               />
             </div>
             <div>
@@ -182,7 +191,7 @@ export function App() {
             onEnterVault={handleEnterVault}
           />
         ) : (
-          /* Second Page: Full Letters Collection */
+          /* Second Page: Letters Experience */
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 animate-fade-in">
             {/* Header & Mood Filter Tabs */}
             <Header
@@ -195,17 +204,56 @@ export function App() {
               openedCount={openedLetterIds.length}
             />
 
-            {/* Letters Grid: Small Rectangular Envelope Boxes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
-              {filteredLetters.map((letter) => (
-                <EnvelopeCard
-                  key={letter.id}
-                  letter={letter}
-                  isOpened={openedLetterIds.includes(letter.id)}
-                  onOpen={handleOpenLetter}
-                />
-              ))}
+            {/* View Mode Toggle: One-by-One vs All Envelopes */}
+            <div className="flex justify-center mb-6">
+              <div className="inline-flex items-center p-1 bg-black/90 rounded-2xl border border-black shadow-lg">
+                <button
+                  onClick={() => setLetterDisplayMode('one-by-one')}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    letterDisplayMode === 'one-by-one'
+                      ? 'bg-[#F4C2C2] text-black shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>One by One</span>
+                </button>
+
+                <button
+                  onClick={() => setLetterDisplayMode('all-grid')}
+                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    letterDisplayMode === 'all-grid'
+                      ? 'bg-[#F4C2C2] text-black shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <LayoutList className="w-3.5 h-3.5" />
+                  <span>All Letters Vault</span>
+                </button>
+              </div>
             </div>
+
+            {/* Display Mode 1: One-by-One Focused Letters */}
+            {letterDisplayMode === 'one-by-one' ? (
+              <FocusedLetterView
+                letters={filteredLetters}
+                openedLetterIds={openedLetterIds}
+                onOpenLetter={handleInitiateOpen}
+                onViewAllLetters={() => setLetterDisplayMode('all-grid')}
+              />
+            ) : (
+              /* Display Mode 2: All Letters Grid Overview */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
+                {filteredLetters.map((letter) => (
+                  <EnvelopeCard
+                    key={letter.id}
+                    letter={letter}
+                    isOpened={openedLetterIds.includes(letter.id)}
+                    onOpen={handleInitiateOpen}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Empty State */}
             {filteredLetters.length === 0 && (
@@ -230,13 +278,21 @@ export function App() {
         <p>Made with all my heart for {PARTNER_CONFIG.partnerName} • Always only a letter away</p>
       </footer>
 
-      {/* Modal: Opened Letter Reader */}
-      <LetterModal
-        letter={selectedLetter}
-        onClose={() => setSelectedLetter(null)}
+      {/* Modal 1: Shake-To-Open Interactive Stage */}
+      <ShakeToOpenModal
+        letter={shakeLetter}
+        isOpen={Boolean(shakeLetter)}
+        onClose={() => setShakeLetter(null)}
+        onFullyOpened={handleShakeComplete}
       />
 
-      {/* Modal: Add New Letter */}
+      {/* Modal 2: Opened Letter Reader (Black Stationery with Baby Pink Fonts) */}
+      <LetterModal
+        letter={readLetter}
+        onClose={() => setReadLetter(null)}
+      />
+
+      {/* Modal 3: Add New Letter */}
       <AddLetterModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

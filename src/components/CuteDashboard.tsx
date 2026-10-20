@@ -40,18 +40,6 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
 
   return (
     <div className="relative z-10 max-w-4xl mx-auto px-4 pt-6 pb-20">
-      
-      {/* Corner Decorative Sakura Branches */}
-      <img
-        src="/assets/images/sakura-branch-left.jpg"
-        alt="Sakura"
-        className="fixed top-0 left-0 w-36 sm:w-56 opacity-40 pointer-events-none -z-10 mix-blend-multiply"
-      />
-      <img
-        src="/assets/images/sakura-branch-right.jpg"
-        alt="Sakura"
-        className="fixed top-0 right-0 w-36 sm:w-56 opacity-40 pointer-events-none -z-10 mix-blend-multiply"
-      />
 
       {/* Top Greeting: "Hey Love :)" */}
       <div className="text-center mb-8 sm:mb-12">
