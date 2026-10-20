@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { DailyMailEntry, DailyMailAuthor } from '../types';
-import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles, Trash2 } from 'lucide-react';
+import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles, Trash2, Pencil } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface DailyMailboxProps {
   mails: DailyMailEntry[];
   onAddMail: (mail: DailyMailEntry) => void;
+  onUpdateMail: (mail: DailyMailEntry) => void;
   onDeleteMail: (id: string) => void;
 }
 
@@ -40,9 +41,10 @@ function getLocalDateTimeString(date: Date): string {
 
 const EMOJI_OPTIONS = ['💌', '💖', '🌸', '🌙', '☕', '✨', '🌹', '🕊️'];
 
-export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, onDeleteMail }) => {
+export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, onUpdateMail, onDeleteMail }) => {
   const [openId, setOpenId] = useState<string | null>(null);
   const [showCompose, setShowCompose] = useState<boolean>(false);
+  const [editingMail, setEditingMail] = useState<DailyMailEntry | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form State
@@ -51,7 +53,6 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
   const [message, setMessage] = useState<string>('');
   const [selectedEmoji, setSelectedEmoji] = useState<string>('💌');
   const [deployAt, setDeployAt] = useState<string>(() => {
-    // Default to current time
     return getLocalDateTimeString(new Date());
   });
 
@@ -59,6 +60,32 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
   const upcoming = mails.filter((m) => !isUnlocked(m.deployAt));
 
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
+
+  // Open compose for new letter
+  const handleOpenNewCompose = () => {
+    setEditingMail(null);
+    setAuthor('ankur');
+    setSubject('');
+    setMessage('');
+    setSelectedEmoji('💌');
+    setDeployAt(getLocalDateTimeString(new Date()));
+    setShowCompose(true);
+  };
+
+  // Open compose for editing an existing letter
+  const handleStartEdit = (mail: DailyMailEntry) => {
+    setEditingMail(mail);
+    setAuthor(mail.author);
+    setSubject(mail.subject);
+    setMessage(mail.body.join('\n\n'));
+    setSelectedEmoji(mail.emoji || '💌');
+    try {
+      setDeployAt(getLocalDateTimeString(new Date(mail.deployAt)));
+    } catch {
+      setDeployAt(getLocalDateTimeString(new Date()));
+    }
+    setShowCompose(true);
+  };
 
   // Quick Preset Handlers
   const handleSetPreset = (preset: 'now' | 'tonight' | 'tomorrow') => {
@@ -84,17 +111,33 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
       .map((p) => p.trim())
       .filter(Boolean);
 
-    const newMail: DailyMailEntry = {
-      id: `mail-${Date.now()}`,
-      author,
-      authorLabel: author === 'ankur' ? 'From Ankur' : 'From Her',
-      subject: subject.trim(),
-      body: paras.length > 0 ? paras : [message.trim()],
-      deployAt: new Date(deployAt).toISOString(),
-      emoji: selectedEmoji,
-    };
+    if (editingMail) {
+      // Update existing mail
+      const updated: DailyMailEntry = {
+        ...editingMail,
+        author,
+        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Her',
+        subject: subject.trim(),
+        body: paras.length > 0 ? paras : [message.trim()],
+        deployAt: new Date(deployAt).toISOString(),
+        emoji: selectedEmoji,
+      };
 
-    onAddMail(newMail);
+      onUpdateMail(updated);
+    } else {
+      // Create new mail
+      const newMail: DailyMailEntry = {
+        id: `mail-${Date.now()}`,
+        author,
+        authorLabel: author === 'ankur' ? 'From Ankur' : 'From Her',
+        subject: subject.trim(),
+        body: paras.length > 0 ? paras : [message.trim()],
+        deployAt: new Date(deployAt).toISOString(),
+        emoji: selectedEmoji,
+      };
+
+      onAddMail(newMail);
+    }
 
     confetti({
       particleCount: 50,
@@ -104,6 +147,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
     });
 
     // Reset Form
+    setEditingMail(null);
     setSubject('');
     setMessage('');
     setShowCompose(false);
@@ -126,7 +170,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
         {/* Primary Compose Button */}
         <div className="mt-4 flex justify-center">
           <button
-            onClick={() => setShowCompose(true)}
+            onClick={handleOpenNewCompose}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-black text-[#F4C2C2] font-black text-xs sm:text-sm shadow-xl active:scale-95 transition-all border border-[#F4C2C2]/40"
           >
             <Pen className="w-3.5 h-3.5 text-[#F4C2C2]" />
@@ -214,9 +258,20 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
 
                       <div className="mt-5 pt-3 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-[#F4C2C2]">
                         <span className="font-cursive text-sm">With love & care ❤️</span>
-                        <div className="flex items-center gap-3">
-                          <span className="text-zinc-500">{formatDate(mail.deployAt)}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-zinc-500 mr-1">{formatDate(mail.deployAt)}</span>
                           <button
+                            type="button"
+                            onClick={() => handleStartEdit(mail)}
+                            className="p-1 px-1.5 rounded-lg bg-zinc-900 text-zinc-400 hover:text-[#F4C2C2] active:scale-90 transition-all flex items-center gap-1 border border-zinc-800"
+                            title="Edit letter"
+                            aria-label="Edit letter"
+                          >
+                            <Pencil className="w-3 h-3" />
+                            <span className="text-[9px]">Edit</span>
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => {
                               if (window.confirm('Delete this letter from mailbox?')) {
                                 onDeleteMail(mail.id);
@@ -276,8 +331,18 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
                   </p>
                 </div>
 
-                {/* Cancel & Delete Scheduled Mail */}
-                <div className="shrink-0 flex items-center">
+                {/* Edit & Delete Scheduled Mail */}
+                <div className="shrink-0 flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleStartEdit(mail)}
+                    className="p-2 rounded-xl text-black/50 hover:text-black hover:bg-black/10 active:scale-90 transition-all"
+                    title="Edit scheduled letter"
+                    aria-label="Edit scheduled letter"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+
                   {deleteConfirmId === mail.id ? (
                     <div className="flex items-center gap-1 animate-pop-in">
                       <button
@@ -329,11 +394,15 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
             <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
               <div className="flex items-center gap-2">
                 <span className="w-7 h-7 rounded-full bg-[#F4C2C2] text-black flex items-center justify-center font-bold text-xs">
-                  💌
+                  {selectedEmoji || '💌'}
                 </span>
                 <div>
-                  <h3 className="font-serif font-black text-base text-white">Write Daily Mail</h3>
-                  <p className="text-[10px] text-[#F4C2C2]">Send a surprise message to each other</p>
+                  <h3 className="font-serif font-black text-base text-white">
+                    {editingMail ? 'Edit Letter' : 'Write Daily Mail'}
+                  </h3>
+                  <p className="text-[10px] text-[#F4C2C2]">
+                    {editingMail ? 'Modify your message or scheduled time' : 'Send a surprise message to each other'}
+                  </p>
                 </div>
               </div>
               <button
@@ -482,7 +551,7 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
                   className="w-full py-3.5 px-4 rounded-2xl bg-[#F4C2C2] text-black font-black text-xs sm:text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
                 >
                   <Sparkles className="w-4 h-4 text-black" />
-                  <span>Seal & Schedule Letter 💌</span>
+                  <span>{editingMail ? 'Save Changes ✨' : 'Seal & Schedule Letter 💌'}</span>
                 </button>
               </div>
 

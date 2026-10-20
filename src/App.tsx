@@ -55,6 +55,10 @@ export function App() {
     setMails((prev) => [newMail, ...prev]);
   };
 
+  const handleUpdateMail = (updatedMail: DailyMailEntry) => {
+    setMails((prev) => prev.map((m) => (m.id === updatedMail.id ? updatedMail : m)));
+  };
+
   const handleDeleteMail = (id: string) => {
     setMails((prev) => prev.filter((m) => m.id !== id));
   };
@@ -188,7 +192,12 @@ export function App() {
             </div>
           </header>
           <div className="flex-1 overflow-y-auto">
-            <DailyMailbox mails={mails} onAddMail={handleAddMail} onDeleteMail={handleDeleteMail} />
+            <DailyMailbox
+              mails={mails}
+              onAddMail={handleAddMail}
+              onUpdateMail={handleUpdateMail}
+              onDeleteMail={handleDeleteMail}
+            />
           </div>
         </div>
       )}
