@@ -16,72 +16,83 @@ export const EnvelopeCard: React.FC<EnvelopeCardProps> = ({
   return (
     <div
       onClick={() => onOpen(letter)}
-      className={`group relative cursor-pointer select-none rounded-3xl bg-[#000000] text-white border-2 border-black hover:border-[#F4C2C2] p-6 sm:p-7 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col justify-between overflow-hidden ${
+      className={`group relative cursor-pointer select-none rounded-2xl bg-black text-white border-2 border-zinc-800 hover:border-[#F4C2C2] p-4 sm:p-5 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between overflow-hidden min-h-[175px] max-h-[195px] ${
         letter.isSpecial ? 'ring-2 ring-[#F4C2C2] ring-offset-2 ring-offset-[#F4C2C2]' : ''
       }`}
     >
-      {/* Top Envelope Flap Triangle Graphic in Black & Baby Pink Line */}
-      <div className="absolute top-0 left-0 right-0 h-10 pointer-events-none flex justify-center overflow-hidden">
-        <div className="w-0 h-0 border-l-[140px] border-l-transparent border-r-[140px] border-r-transparent border-t-[34px] border-t-zinc-900 group-hover:border-t-zinc-800 transition-colors" />
-        <div className="absolute top-0 w-32 h-[1px] bg-[#F4C2C2]/40" />
+      {/* Postal Envelope Fold Lines (Subtle geometric seam lines) */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        {/* Diagonal envelope crease lines */}
+        <div className="absolute top-0 left-0 w-full h-[60px] border-b border-[#F4C2C2]/40 transform -skew-y-3" />
+        <div className="absolute top-0 right-0 w-full h-[60px] border-b border-[#F4C2C2]/40 transform skew-y-3" />
       </div>
 
-      {/* Top Status & Mood */}
-      <div className="relative z-10 flex items-center justify-between mb-6">
-        <span className="px-3 py-1 rounded-full text-[11px] font-bold border border-[#F4C2C2]/50 text-[#F4C2C2] bg-zinc-950/80 tracking-wide backdrop-blur-sm">
-          {letter.categoryLabel}
-        </span>
+      {/* Top Header Row: Category Badge on left, Postal Stamp on right */}
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-[#F4C2C2]/40 text-[#F4C2C2] bg-zinc-950 tracking-wider uppercase">
+            {letter.categoryLabel}
+          </span>
+          {letter.isSpecial && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-[#F4C2C2] text-black shadow-sm animate-pulse">
+              <Sparkles className="w-2.5 h-2.5 text-black" />
+              <span>Priority</span>
+            </span>
+          )}
+        </div>
 
-        {letter.isSpecial ? (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#F4C2C2] text-black shadow-md shadow-pink-900/30 animate-pulse">
-            <Sparkles className="w-3 h-3 text-black" />
-            <span>Read First</span>
+        {/* Vintage Postal Stamp Badge with Wavy Postmark */}
+        <div className="flex items-center gap-1.5">
+          {/* Postmark Waves */}
+          <span className="text-[10px] text-zinc-500 font-mono tracking-tighter opacity-70 hidden sm:inline select-none">
+            ≋≋≋
           </span>
-        ) : isOpened ? (
-          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
-            <Check className="w-3.5 h-3.5" />
-            <span>Read</span>
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400">
-            <Mail className="w-3 h-3 text-zinc-400" />
-            <span>Sealed</span>
-          </span>
-        )}
+          {/* Postage Stamp Box */}
+          <div className="px-2 py-1 rounded bg-zinc-900/90 border border-dashed border-[#F4C2C2]/60 flex items-center gap-1 text-[10px] font-bold text-[#F4C2C2]">
+            <span>{letter.sealEmoji || '💌'}</span>
+            <span className="text-[8px] uppercase tracking-wider text-zinc-400">Post</span>
+          </div>
+        </div>
       </div>
 
-      {/* Center Wax Seal in Baby Pink with Black Emoji */}
-      <div className="relative z-10 my-4 flex justify-center">
-        <div className="relative">
-          {/* Circular wax seal */}
-          <div className="w-14 h-14 rounded-full bg-[#F4C2C2] text-black flex items-center justify-center text-xl shadow-lg shadow-black/80 group-hover:scale-110 transition-transform duration-300 border-2 border-white/40">
+      {/* Center: Recipient address line & Letter Title */}
+      <div className="relative z-10 my-auto py-1">
+        <p className="text-[12px] font-cursive text-[#F4C2C2]/90 tracking-wide select-none">
+          To: My Favorite Girl ❤️
+        </p>
+        <h3 className="font-serif font-bold text-white text-base sm:text-lg group-hover:text-[#F4C2C2] transition-colors leading-tight line-clamp-1 mt-0.5">
+          {letter.title}
+        </h3>
+        <p className="text-[11px] text-zinc-400 font-serif italic line-clamp-1 mt-0.5">
+          "{letter.subtitle}"
+        </p>
+      </div>
+
+      {/* Bottom Envelope Footer: Wax Seal + Status / Unseal link */}
+      <div className="relative z-10 pt-2 border-t border-zinc-850 flex items-center justify-between">
+        {/* Compact Wax Seal */}
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-[#F4C2C2] text-black text-xs font-bold flex items-center justify-center shadow-md shadow-black group-hover:scale-110 transition-transform">
             <span className="transform -rotate-6">{letter.sealEmoji || '💌'}</span>
           </div>
-
-          {/* Stamp ring effect */}
-          <div className="absolute -inset-1 rounded-full border border-dashed border-[#F4C2C2]/60 pointer-events-none animate-spin-slow opacity-60 group-hover:opacity-100" />
-        </div>
-      </div>
-
-      {/* Letter Title & Description */}
-      <div className="relative z-10 text-center mt-2 flex-1 flex flex-col justify-between">
-        <div>
-          <h3 className="font-serif font-bold text-white text-lg sm:text-xl group-hover:text-[#F4C2C2] transition-colors leading-snug">
-            {letter.title}
-          </h3>
-          <p className="mt-2 text-xs text-zinc-400 line-clamp-1 italic font-serif">
-            "{letter.subtitle}"
-          </p>
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+            {letter.previewSnippet.slice(0, 22)}...
+          </span>
         </div>
 
-        {/* Snippet / Open Prompt */}
-        <div className="mt-6 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs font-semibold text-zinc-400 group-hover:text-[#F4C2C2] transition-colors">
-          <span className="truncate max-w-[170px] text-[11px] font-normal text-zinc-500 group-hover:text-zinc-300">
-            {letter.previewSnippet}
-          </span>
-          <span className="font-bold underline decoration-[#F4C2C2] underline-offset-4 shrink-0 ml-2 text-[#F4C2C2]">
-            Unseal ➔
-          </span>
+        {/* Status / Prompt */}
+        <div className="flex items-center gap-1">
+          {isOpened ? (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800">
+              <Check className="w-2.5 h-2.5" />
+              <span>Read</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#F4C2C2] group-hover:underline underline-offset-2">
+              <Mail className="w-3 h-3 text-[#F4C2C2]" />
+              <span>Unseal ➔</span>
+            </span>
+          )}
         </div>
       </div>
     </div>

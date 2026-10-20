@@ -195,8 +195,8 @@ export function App() {
               openedCount={openedLetterIds.length}
             />
 
-            {/* Letters Grid: Black Cards on Baby Pink Background */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-4">
+            {/* Letters Grid: Small Rectangular Envelope Boxes */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
               {filteredLetters.map((letter) => (
                 <EnvelopeCard
                   key={letter.id}
