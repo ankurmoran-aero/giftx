@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Letter } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
 import { CuteDashboard } from './components/CuteDashboard';
-import { FocusedLetterView } from './components/FocusedLetterView';
+import { LetterScrollView } from './components/LetterScrollView';
 import { ShakeToOpenModal } from './components/ShakeToOpenModal';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
@@ -74,117 +74,94 @@ export function App() {
       {/* Lightweight 60fps Floating Ambient Hearts */}
       <FloatingHearts />
 
-      {/* Clean Mobile-First Top Navbar */}
-      <header className="sticky top-0 z-40 bg-[#F4C2C2]/95 border-b border-black/10">
-        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-          
-          {activeView === 'letters' ? (
-            /* Left: Clean Back to Home button on Letters page */
-            <button
-              onClick={() => {
-                setActiveView('dashboard');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:bg-black/20 transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Home</span>
-            </button>
-          ) : (
-            /* Left: Cute Avatar & Greeting on Dashboard */
-            <div 
-              onClick={handleSpawnLove}
-              className="flex items-center gap-2 cursor-pointer select-none"
-            >
-              <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center text-[#F4C2C2] shadow-sm overflow-hidden p-0.5">
-                <img
-                  src="/assets/images/cat-love-letter.jpg"
-                  alt="Cat Love"
-                  className="w-full h-full object-cover rounded"
-                />
-              </div>
-              <span className="font-serif font-black text-base text-black tracking-tight">
-                Hey Love :)
-              </span>
-            </div>
-          )}
-
-          {/* Center Title on Letters Page */}
-          {activeView === 'letters' && (
-            <span className="font-serif font-black text-sm text-black tracking-tight">
-              Open When... 💌
-            </span>
-          )}
-
-          {/* Right Action */}
-          <div className="flex items-center gap-1.5">
-            {activeView === 'dashboard' ? (
-              <button
-                onClick={() => {
-                  setActiveView('letters');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform shadow-md"
+      {/* ── Dashboard view ── */}
+      {activeView === 'dashboard' && (
+        <>
+          {/* Navbar */}
+          <header className="sticky top-0 z-40 bg-[#F4C2C2]/95 border-b border-black/10 backdrop-blur-sm">
+            <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
+              <div
+                onClick={handleSpawnLove}
+                className="flex items-center gap-2 cursor-pointer select-none"
               >
-                <span>Letters</span>
-                <span className="text-[10px] bg-[#F4C2C2] text-black px-1.5 rounded-full">
-                  {letters.length}
-                </span>
+                <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center overflow-hidden p-0.5">
+                  <img src="/assets/images/cat-love-letter.jpg" alt="Cat" className="w-full h-full object-cover rounded" />
+                </div>
+                <span className="font-serif font-black text-base text-black tracking-tight">Hey Love :)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => { setActiveView('letters'); }}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform shadow-md"
+                >
+                  <span>Letters</span>
+                  <span className="text-[10px] bg-[#F4C2C2] text-black px-1.5 rounded-full">{letters.length}</span>
+                </button>
+                <button
+                  onClick={handleSpawnLove}
+                  className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Dashboard content */}
+          <main className="relative z-10 max-w-md mx-auto">
+            <CuteDashboard
+              partnerName={PARTNER_CONFIG.partnerName}
+              senderName={PARTNER_CONFIG.senderName}
+              totalLetters={letters.length}
+              onEnterVault={() => setActiveView('letters')}
+            />
+          </main>
+        </>
+      )}
+
+      {/* ── Letters view: full-screen snap-scroll, NO sticky header eating space ── */}
+      {activeView === 'letters' && (
+        <div className="fixed inset-0 bg-[#F4C2C2] z-20 flex flex-col">
+
+          {/* Slim top bar */}
+          <header className="shrink-0 z-30 bg-[#F4C2C2]/95 border-b border-black/10 backdrop-blur-sm">
+            <div className="max-w-md mx-auto px-4 h-13 flex items-center justify-between h-12">
+              <button
+                onClick={() => setActiveView('dashboard')}
+                className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:bg-black/20 transition-all active:scale-95"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Home
               </button>
-            ) : (
+
+              <span className="font-serif font-black text-sm text-black tracking-tight">Open When... 💌</span>
+
               <button
                 onClick={() => setShowAllDrawer(true)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform"
-                title="All Letters"
               >
                 <LayoutList className="w-3.5 h-3.5" />
-                <span>All ({letters.length})</span>
+                All
               </button>
-            )}
+            </div>
+          </header>
 
-            <button
-              onClick={handleSpawnLove}
-              className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform"
-              aria-label="Love Shower"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-black" />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Views */}
-      <main className="relative z-10 max-w-md mx-auto">
-        {activeView === 'dashboard' ? (
-          /* PAGE 1: CUTE DASHBOARD */
-          <CuteDashboard
-            partnerName={PARTNER_CONFIG.partnerName}
-            senderName={PARTNER_CONFIG.senderName}
-            totalLetters={letters.length}
-            onEnterVault={() => {
-              setActiveView('letters');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        ) : (
-          /* PAGE 2: CLEAN ONE-BY-ONE LETTER FLOW */
-          <div className="px-3 pt-2 pb-16">
-            <FocusedLetterView
+          {/* Scroll container — takes remaining height, snap-y mandatory */}
+          <div className="flex-1 overflow-y-scroll letter-scroll-container">
+            <LetterScrollView
               letters={letters}
               openedLetterIds={openedLetterIds}
               onOpenLetter={handleInitiateOpen}
-              onViewAllLetters={() => setShowAllDrawer(true)}
+              onViewAll={() => setShowAllDrawer(true)}
             />
           </div>
-        )}
-      </main>
+        </div>
+      )}
 
-      {/* Drawer: All Letters Vault (Opens only when she taps "All") */}
+      {/* ── All Letters Drawer ── */}
       {showAllDrawer && (
-        <div className="fixed inset-0 z-50 bg-black/85 flex flex-col justify-end animate-fade-in backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 bg-black/85 flex flex-col justify-end backdrop-blur-sm animate-fade-in">
           <div className="bg-gradient-to-b from-[#181417] via-[#120f12] to-[#0c0a0c] text-white rounded-t-[32px] border-t-2 border-[#F4C2C2]/50 max-h-[85vh] flex flex-col p-5 shadow-2xl">
-            
-            {/* Drawer Header */}
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">
               <div>
                 <h3 className="font-serif font-black text-lg text-white">All Letters</h3>
@@ -198,7 +175,6 @@ export function App() {
               </button>
             </div>
 
-            {/* Scrollable List of Letters */}
             <div className="overflow-y-auto py-4 space-y-2.5 flex-1">
               {letters.map((letter, idx) => {
                 const isOpened = openedLetterIds.includes(letter.id);
@@ -213,18 +189,13 @@ export function App() {
                         {letter.sealEmoji || '💌'}
                       </span>
                       <div className="min-w-0">
-                        <span className="text-[10px] text-[#F4C2C2] uppercase font-bold tracking-wider block">
-                          Letter {idx + 1}
-                        </span>
-                        <h4 className="font-serif font-bold text-white text-sm truncate">
-                          {letter.title}
-                        </h4>
+                        <span className="text-[10px] text-[#F4C2C2] uppercase font-bold tracking-wider block">Letter {idx + 1}</span>
+                        <h4 className="font-serif font-bold text-white text-sm truncate">{letter.title}</h4>
                       </div>
                     </div>
-
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ml-2 ${
-                      isOpened 
-                        ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800' 
+                      isOpened
+                        ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800'
                         : 'bg-zinc-900 text-[#F4C2C2] border border-[#F4C2C2]/30'
                     }`}>
                       {isOpened ? 'Read' : 'Sealed'}
@@ -237,7 +208,7 @@ export function App() {
         </div>
       )}
 
-      {/* Modal 1: 3-Stage Shake-To-Open Interactive Envelope */}
+      {/* ── Shake-to-Open Modal ── */}
       <ShakeToOpenModal
         letter={shakeLetter}
         isOpen={Boolean(shakeLetter)}
@@ -245,7 +216,7 @@ export function App() {
         onFullyOpened={handleShakeComplete}
       />
 
-      {/* Modal 2: Opened Letter Reader (Black Stationery with Baby Pink Fonts) */}
+      {/* ── Letter Reader Modal ── */}
       <LetterModal
         letter={readLetter}
         onClose={() => setReadLetter(null)}

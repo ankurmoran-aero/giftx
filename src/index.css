@@ -107,13 +107,43 @@
   animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
-/* Hide scrollbar for clean horizontal carousel */
-.no-scrollbar::-webkit-scrollbar {
+/* Hide scrollbar everywhere clean */
+.no-scrollbar::-webkit-scrollbar,
+html::-webkit-scrollbar {
   display: none;
 }
-.no-scrollbar {
+.no-scrollbar,
+html {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Vertical scroll-snap for letter sections */
+.letter-scroll-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100dvh;
+  -webkit-overflow-scrolling: touch;
+}
+.letter-scroll-container section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease both;
 }
 
 /* Custom scrollbar */
