@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fda4af" />
+      <stop offset="100%" stop-color="#f43f5e" />
+    </linearGradient>
+    <linearGradient id="lidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+    <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#eab308" />
+    </linearGradient>
+  </defs>
+  <!-- Main Box -->
+  <rect x="40" y="85" width="120" height="85" rx="12" fill="url(#boxGrad)"/>
+  <!-- Vertical Gold Ribbon -->
+  <rect x="90" y="85" width="20" height="85" fill="url(#goldRibbon)"/>
+  <!-- Lid -->
+  <rect x="30" y="65" width="140" height="25" rx="8" fill="url(#lidGrad)"/>
+  <rect x="90" y="65" width="20" height="25" fill="url(#goldRibbon)"/>
+  <!-- Bow -->
+  <path d="M 100 65 C 80 35, 50 45, 75 65 Z" fill="url(#goldRibbon)"/>
+  <path d="M 100 65 C 120 35, 150 45, 125 65 Z" fill="url(#goldRibbon)"/>
+  <circle cx="100" cy="65" r="7" fill="#ca8a04"/>
+  <!-- Sparkles -->
+  <circle cx="160" cy="50" r="3" fill="#fde047"/>
+  <circle cx="35" cy="110" r="2.5" fill="#fde047"/>
+  <circle cx="170" cy="140" r="2" fill="#fda4af"/>
+</svg>
