@@ -28,7 +28,7 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'With all my love & heart,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80',
+      url: '/assets/images/cat-love-letter.jpg',
       caption: 'Where our story keeps unfolding 📸',
       rotationDeg: -2
     },
@@ -52,8 +52,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Always counting down to seeing you,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
-      caption: 'Under the same sky, always 🌌',
+      url: '/assets/images/cat-heart-hug.jpg',
+      caption: 'A giant hug whenever you need it 💕',
       rotationDeg: 3
     },
     secretNote: 'Check your phone — I probably just sent you something silly.'
@@ -76,8 +76,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Your biggest cheerleader, always,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
-      caption: 'A cup of tea & endless hugs 🧸',
+      url: '/assets/images/cherry-blossom-cluster.jpg',
+      caption: 'Gentle blossoms for your heart 🌸',
       rotationDeg: -3
     },
     secretNote: 'You survived 100% of your hardest days before this, and you will thrive past this one too.'
@@ -100,8 +100,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Goodnight and sweet dreams,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-      caption: 'Peaceful waves for a peaceful sleep 🌊',
+      url: '/assets/images/pixel-bunny-heart.jpg',
+      caption: 'Counting bunny hops to dreamland 🌙',
       rotationDeg: 2
     },
     secretNote: 'I will see you in your dreams tonight.'
@@ -124,8 +124,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Resident comedian & your personal clown,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=800&q=80',
-      caption: 'Look at this and tell me you didn’t smile! 🐱',
+      url: '/assets/images/cat-flower-doodle.jpg',
+      caption: 'A flower and a grin from me to you 🌻',
       rotationDeg: -1
     },
     secretNote: 'If you’re still not laughing, call me right now and make me tell a terrible joke.'
@@ -148,8 +148,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Always on your team,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
-      caption: 'Every journey has turns, but we walk together 🌿',
+      url: '/assets/images/swan-ribbon-bow.jpg',
+      caption: 'Always swimming in sync, no matter what 🦢',
       rotationDeg: 2
     },
     secretNote: 'I love you even when we are stubborn.'
@@ -172,8 +172,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'Your #1 proud fan,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80',
-      caption: 'To many more victories together 🥂',
+      url: '/assets/images/pink-flower-bouquet.jpg',
+      caption: 'A victory bouquet for my superstar 💐',
       rotationDeg: -2
     },
     secretNote: 'Celebration coupon: 1 free gourmet dinner date of your choice.'
@@ -196,8 +196,8 @@ export const INITIAL_LETTERS: Letter[] = [
     signOff: 'With all of my heart,',
     senderName: 'Ankur',
     polaroid: {
-      url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80',
-      caption: 'Forever my sweetest blessing ✨',
+      url: '/assets/images/pixel-bunny-pink.jpg',
+      caption: 'You are so, so deeply adored ✨',
       rotationDeg: 1
     },
     secretNote: 'You will always be my home.'

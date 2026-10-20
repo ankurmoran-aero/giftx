@@ -1,15 +1,18 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Letter, MoodCategory } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
+import { CuteDashboard } from './components/CuteDashboard';
 import { Header } from './components/Header';
 import { EnvelopeCard } from './components/EnvelopeCard';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
 import { AddLetterModal } from './components/AddLetterModal';
-import { Heart, Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, Mail, Home } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function App() {
+  const [activeView, setActiveView] = useState<'dashboard' | 'letters'>('dashboard');
+
   const [letters, setLetters] = useState<Letter[]>(() => {
     const saved = localStorage.getItem('giftx_letters');
     if (saved) {
@@ -37,6 +40,15 @@ export function App() {
   const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<MoodCategory>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const vaultRef = useRef<HTMLDivElement>(null);
+
+  // Compute days together
+  const daysLoved = useMemo(() => {
+    const start = new Date(PARTNER_CONFIG.anniversaryDate);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - start.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }, []);
 
   // Persist opened status
   useEffect(() => {
@@ -80,35 +92,80 @@ export function App() {
     });
   };
 
+  const handleEnterVault = () => {
+    setActiveView('letters');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-[#F4C2C2] text-black font-sans relative overflow-x-hidden selection:bg-black selection:text-[#F4C2C2]">
       {/* Floating Ambient Hearts & Petals */}
       <FloatingHearts />
 
-      {/* Top Cute Navbar Bar */}
-      <header className="sticky top-0 z-40 bg-[#F4C2C2]/90 backdrop-blur-md border-b border-black/10">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      {/* Top Glassmorphic Navbar */}
+      <header className="sticky top-0 z-40 bg-[#F4C2C2]/80 backdrop-blur-md border-b border-black/10">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          
+          {/* Logo / Switch to Dashboard */}
           <div 
-            onClick={handleSpawnLove}
+            onClick={() => {
+              setActiveView('dashboard');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="flex items-center gap-2 cursor-pointer group select-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform">
-              <Heart className="w-5 h-5 fill-[#F4C2C2]" />
+            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform overflow-hidden">
+              <img
+                src="/assets/images/cat-love-letter.jpg"
+                alt="Cat Love"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <span className="font-serif font-black text-lg sm:text-xl text-black tracking-tight">
-                Open When<span className="text-black">...</span>
+              <span className="font-serif font-black text-lg text-black tracking-tight">
+                Hey Love :)
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          {/* Navigation Pill Buttons */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <button
+              onClick={() => {
+                setActiveView('dashboard');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeView === 'dashboard'
+                  ? 'bg-black text-[#F4C2C2] shadow-md'
+                  : 'bg-black/10 hover:bg-black/20 text-black'
+              }`}
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>Home</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setActiveView('letters');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeView === 'letters'
+                  ? 'bg-black text-[#F4C2C2] shadow-md'
+                  : 'bg-black/10 hover:bg-black/20 text-black'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              <span>Letters ({letters.length})</span>
+            </button>
+
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-black text-[#F4C2C2] hover:bg-zinc-900 shadow-md transition-all active:scale-95"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-black text-[#F4C2C2] hover:bg-zinc-900 shadow-md transition-all active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5 text-[#F4C2C2]" />
-              <span className="hidden sm:inline">Add Letter</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Letter</span>
             </button>
 
             <button
@@ -123,42 +180,57 @@ export function App() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 relative z-10">
-        {/* Banner with Anniversary/Love Days Counter & Mood Filter Tabs */}
-        <Header
-          partnerName={PARTNER_CONFIG.partnerName}
-          senderName={PARTNER_CONFIG.senderName}
-          anniversaryDate={PARTNER_CONFIG.anniversaryDate}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          lettersCount={letters.length}
-          openedCount={openedLetterIds.length}
-        />
-
-        {/* Letters Grid: Black Cards on Baby Pink Background */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-4">
-          {filteredLetters.map((letter) => (
-            <EnvelopeCard
-              key={letter.id}
-              letter={letter}
-              isOpened={openedLetterIds.includes(letter.id)}
-              onOpen={handleOpenLetter}
+      {/* Main Page Content */}
+      <main className="relative z-10">
+        {activeView === 'dashboard' ? (
+          /* First Page: Cute Dashboard with "Hey Love :)" and info button */
+          <CuteDashboard
+            partnerName={PARTNER_CONFIG.partnerName}
+            senderName={PARTNER_CONFIG.senderName}
+            daysLoved={daysLoved}
+            totalLetters={letters.length}
+            onEnterVault={handleEnterVault}
+          />
+        ) : (
+          /* Second Page: Full Letters Collection */
+          <div ref={vaultRef} className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 animate-fade-in">
+            {/* Header & Mood Filter Tabs */}
+            <Header
+              partnerName={PARTNER_CONFIG.partnerName}
+              senderName={PARTNER_CONFIG.senderName}
+              anniversaryDate={PARTNER_CONFIG.anniversaryDate}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              lettersCount={letters.length}
+              openedCount={openedLetterIds.length}
             />
-          ))}
-        </div>
 
-        {/* Empty State */}
-        {filteredLetters.length === 0 && (
-          <div className="text-center py-16 bg-black text-white rounded-3xl border border-black max-w-md mx-auto my-8 p-8 shadow-xl">
-            <span className="text-3xl">💌</span>
-            <h3 className="font-serif font-bold text-white text-base mt-2">No letters in this mood</h3>
-            <p className="text-xs text-zinc-400 mt-1">Try switching to "All Letters" or add one for this moment.</p>
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className="mt-4 px-4 py-2 bg-[#F4C2C2] text-black rounded-xl text-xs font-bold hover:bg-white transition-colors"
-            >
-              View All Letters
-            </button>
+            {/* Letters Grid: Black Cards on Baby Pink Background */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-4">
+              {filteredLetters.map((letter) => (
+                <EnvelopeCard
+                  key={letter.id}
+                  letter={letter}
+                  isOpened={openedLetterIds.includes(letter.id)}
+                  onOpen={handleOpenLetter}
+                />
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {filteredLetters.length === 0 && (
+              <div className="text-center py-16 bg-black text-white rounded-3xl border border-black max-w-md mx-auto my-8 p-8 shadow-xl">
+                <span className="text-3xl">💌</span>
+                <h3 className="font-serif font-bold text-white text-base mt-2">No letters in this mood</h3>
+                <p className="text-xs text-zinc-400 mt-1">Try switching to "All Letters" or add one for this moment.</p>
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className="mt-4 px-4 py-2 bg-[#F4C2C2] text-black rounded-xl text-xs font-bold hover:bg-white transition-colors"
+                >
+                  View All Letters
+                </button>
+              </div>
+            )}
           </div>
         )}
       </main>
