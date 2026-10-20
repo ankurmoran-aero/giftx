@@ -19,13 +19,14 @@ export function App() {
 
   // Versioned to guarantee user's 4 custom letters immediately replace old cache
   const [letters] = useState<Letter[]>(() => {
-    const saved = localStorage.getItem('giftx_letters_v3');
+    const saved = localStorage.getItem('giftx_letters_v4');
     if (saved) {
       try { return JSON.parse(saved); } catch { return INITIAL_LETTERS; }
     }
     localStorage.removeItem('giftx_letters');
     localStorage.removeItem('giftx_letters_v2');
-    localStorage.setItem('giftx_letters_v3', JSON.stringify(INITIAL_LETTERS));
+    localStorage.removeItem('giftx_letters_v3');
+    localStorage.setItem('giftx_letters_v4', JSON.stringify(INITIAL_LETTERS));
     return INITIAL_LETTERS;
   });
 

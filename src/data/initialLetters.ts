@@ -109,9 +109,9 @@ export const INITIAL_LETTERS: Letter[] = [
     secretNote: 'P.S. You can always ask me anything. I would rather answer hard questions than have you hurt alone.',
   },
   {
-    id: 'letter-bored-of-me',
-    title: 'Open When... You Are Bored of Me',
-    subtitle: 'Just in case your brain told you this lie',
+    id: 'letter-think-you-bore-me',
+    title: 'Open When... You Think You Bore Me',
+    subtitle: 'When you are overthinking and feel like you are boring to me',
     category: 'love',
     categoryLabel: 'Just Being Us',
     themeColor: 'emerald',
