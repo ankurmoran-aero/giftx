@@ -1,19 +1,13 @@
-import React, { useMemo } from 'react';
-import { Heart, Calendar, Sparkles } from 'lucide-react';
+import React from 'react';
+import { Heart, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface LoveCounterProps {
-  startDate: string; // YYYY-MM-DD
+  startDate?: string; // YYYY-MM-DD
   partnerName: string;
 }
 
-export const LoveCounter: React.FC<LoveCounterProps> = ({ startDate, partnerName }) => {
-  const daysLoved = useMemo(() => {
-    const start = new Date(startDate);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - start.getTime());
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }, [startDate]);
+export const LoveCounter: React.FC<LoveCounterProps> = ({ partnerName }) => {
 
   const triggerLoveExplosion = () => {
     confetti({
@@ -36,11 +30,11 @@ export const LoveCounter: React.FC<LoveCounterProps> = ({ startDate, partnerName
 
       <div className="text-left">
         <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#F4C2C2]">
-          <Calendar className="w-3 h-3 text-[#F4C2C2]" />
-          <span>Loving {partnerName}</span>
+          <Heart className="w-3 h-3 text-[#F4C2C2] fill-[#F4C2C2]" />
+          <span>For {partnerName}</span>
         </div>
         <p className="text-xs sm:text-sm font-extrabold text-white">
-          <span className="text-[#F4C2C2] font-black">{daysLoved}</span> days & counting
+          Times I thought of you: <span className="text-[#F4C2C2] font-black">∞ (and counting)</span>
         </p>
       </div>
 

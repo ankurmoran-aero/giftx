@@ -5,7 +5,6 @@ import confetti from 'canvas-confetti';
 interface CuteDashboardProps {
   partnerName: string;
   senderName: string;
-  daysLoved: number;
   totalLetters: number;
   onEnterVault: () => void;
 }
@@ -13,7 +12,6 @@ interface CuteDashboardProps {
 export const CuteDashboard: React.FC<CuteDashboardProps> = ({
   partnerName,
   senderName,
-  daysLoved,
   totalLetters,
   onEnterVault,
 }) => {
@@ -101,7 +99,7 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
           <div className="flex-1 text-center md:text-left space-y-4">
             <div className="inline-block">
               <span className="text-xs uppercase tracking-widest font-bold text-[#F4C2C2]">
-                A Digital Gift From {senderName}
+                Most Minimalist Gift from {senderName}
               </span>
               <h2 className="text-2xl sm:text-3xl font-serif font-black text-white mt-1">
                 Your Personal "Open When" Box
@@ -116,18 +114,24 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
             {/* Glassmorphic Metrics Widgets */}
             <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2">
               <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
-                <p className="text-xl sm:text-2xl font-black text-[#F4C2C2] font-serif">{daysLoved}</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5">Days Loved</p>
+                <p className="text-xl sm:text-2xl font-black text-[#F4C2C2] font-serif">∞</p>
+                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+                  No. of times I thought of you
+                </p>
               </div>
 
               <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
                 <p className="text-xl sm:text-2xl font-black text-white font-serif">{totalLetters}</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5">Letters Sealed</p>
+                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+                  Letters Sealed
+                </p>
               </div>
 
               <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
                 <p className="text-xl sm:text-2xl font-black text-[#F4C2C2] font-serif">∞</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5">Hugs Ready</p>
+                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+                  Hugs Ready
+                </p>
               </div>
             </div>
 

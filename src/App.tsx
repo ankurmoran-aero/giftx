@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Letter, MoodCategory } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
 import { CuteDashboard } from './components/CuteDashboard';
@@ -40,15 +40,6 @@ export function App() {
   const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<MoodCategory>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const vaultRef = useRef<HTMLDivElement>(null);
-
-  // Compute days together
-  const daysLoved = useMemo(() => {
-    const start = new Date(PARTNER_CONFIG.anniversaryDate);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - start.getTime());
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }, []);
 
   // Persist opened status
   useEffect(() => {
@@ -187,13 +178,12 @@ export function App() {
           <CuteDashboard
             partnerName={PARTNER_CONFIG.partnerName}
             senderName={PARTNER_CONFIG.senderName}
-            daysLoved={daysLoved}
             totalLetters={letters.length}
             onEnterVault={handleEnterVault}
           />
         ) : (
           /* Second Page: Full Letters Collection */
-          <div ref={vaultRef} className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 animate-fade-in">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 animate-fade-in">
             {/* Header & Mood Filter Tabs */}
             <Header
               partnerName={PARTNER_CONFIG.partnerName}
