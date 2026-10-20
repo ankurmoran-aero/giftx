@@ -55,6 +55,10 @@ export function App() {
     setMails((prev) => [newMail, ...prev]);
   };
 
+  const handleDeleteMail = (id: string) => {
+    setMails((prev) => prev.filter((m) => m.id !== id));
+  };
+
   const [shakeLetter, setShakeLetter] = useState<Letter | null>(null);
   const [readLetter, setReadLetter] = useState<Letter | null>(null);
 
@@ -184,7 +188,7 @@ export function App() {
             </div>
           </header>
           <div className="flex-1 overflow-y-auto">
-            <DailyMailbox mails={mails} onAddMail={handleAddMail} />
+            <DailyMailbox mails={mails} onAddMail={handleAddMail} onDeleteMail={handleDeleteMail} />
           </div>
         </div>
       )}

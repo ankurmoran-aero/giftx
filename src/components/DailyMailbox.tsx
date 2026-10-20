@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { DailyMailEntry, DailyMailAuthor } from '../types';
-import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles } from 'lucide-react';
+import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface DailyMailboxProps {
   mails: DailyMailEntry[];
   onAddMail: (mail: DailyMailEntry) => void;
+  onDeleteMail: (id: string) => void;
 }
 
 function isUnlocked(deployAt: string): boolean {
@@ -39,9 +40,10 @@ function getLocalDateTimeString(date: Date): string {
 
 const EMOJI_OPTIONS = ['💌', '💖', '🌸', '🌙', '☕', '✨', '🌹', '🕊️'];
 
-export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail }) => {
+export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, onDeleteMail }) => {
   const [openId, setOpenId] = useState<string | null>(null);
   const [showCompose, setShowCompose] = useState<boolean>(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // Form State
   const [author, setAuthor] = useState<DailyMailAuthor>('ankur');
@@ -212,7 +214,21 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail }) 
 
                       <div className="mt-5 pt-3 border-t border-zinc-800/60 flex items-center justify-between text-[10px] text-[#F4C2C2]">
                         <span className="font-cursive text-sm">With love & care ❤️</span>
-                        <span className="text-zinc-500">{formatDate(mail.deployAt)}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-zinc-500">{formatDate(mail.deployAt)}</span>
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Delete this letter from mailbox?')) {
+                                onDeleteMail(mail.id);
+                              }
+                            }}
+                            className="p-1 text-zinc-500 hover:text-red-400 active:scale-90 transition-all"
+                            title="Delete letter"
+                            aria-label="Delete letter"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -258,6 +274,41 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail }) 
                     <Calendar className="w-2.5 h-2.5" />
                     <span>Unlocks on {formatDate(mail.deployAt)}</span>
                   </p>
+                </div>
+
+                {/* Cancel & Delete Scheduled Mail */}
+                <div className="shrink-0 flex items-center">
+                  {deleteConfirmId === mail.id ? (
+                    <div className="flex items-center gap-1 animate-pop-in">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onDeleteMail(mail.id);
+                          setDeleteConfirmId(null);
+                        }}
+                        className="px-2.5 py-1 rounded-xl bg-red-600 text-white font-bold text-[10px] active:scale-95 transition-transform shadow-sm"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteConfirmId(null)}
+                        className="p-1 rounded-xl bg-black/20 text-black/70 hover:text-black"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setDeleteConfirmId(mail.id)}
+                      className="p-2 rounded-xl text-black/40 hover:text-red-600 hover:bg-black/10 active:scale-90 transition-all"
+                      title="Cancel & delete scheduled letter"
+                      aria-label="Delete scheduled letter"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
