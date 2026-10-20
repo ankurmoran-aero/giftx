@@ -14,31 +14,44 @@ export interface PolaroidPhoto {
 
 export interface Letter {
   id: string;
-  title: string;              // e.g. "Open when you miss me"
-  subtitle: string;           // e.g. "When distance feels a little too loud"
+  title: string;
+  subtitle: string;
   category: MoodCategory;
   categoryLabel: string;
   themeColor: 'rose' | 'amber' | 'purple' | 'emerald' | 'sky' | 'indigo';
-  sealEmoji?: string;         // e.g. "💌", "🌙", "✨", "🫂"
-  unlockDate?: string;        // optional date lock: 'YYYY-MM-DD'
-  isSpecial?: boolean;        // e.g. "Open First" letter
-  previewSnippet: string;     // Little teaser on the envelope
-  content: string[];          // Paragraphs of the letter
-  signOff?: string;           // e.g. "Forever yours,"
-  senderName?: string;        // e.g. "Ankur"
+  sealEmoji?: string;
+  unlockDate?: string;
+  isSpecial?: boolean;
+  previewSnippet: string;
+  content: string[];
+  signOff?: string;
+  senderName?: string;
   polaroid?: PolaroidPhoto;
   musicTrack?: {
     title: string;
     artist: string;
     url?: string;
   };
-  secretNote?: string;        // Little hidden PS or scratch card note
+  secretNote?: string;
 }
 
 export interface PartnerConfig {
   partnerName: string;
   senderName: string;
-  anniversaryDate: string;    // 'YYYY-MM-DD'
-  customPasscode?: string;    // Optional private lock
+  anniversaryDate: string;
+  customPasscode?: string;
   welcomeMessage: string;
+}
+
+// ── Daily Mail ──────────────────────────────────────────────
+export type DailyMailAuthor = 'ankur' | 'her';
+
+export interface DailyMailEntry {
+  id: string;
+  author: DailyMailAuthor;
+  authorLabel: string;          // "From Ankur" / "From Her"
+  subject: string;              // Like an email subject line
+  body: string[];               // Paragraphs
+  deployAt: string;             // ISO 8601 datetime — revealed only after this moment
+  emoji?: string;
 }

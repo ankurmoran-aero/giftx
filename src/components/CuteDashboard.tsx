@@ -7,6 +7,7 @@ interface CuteDashboardProps {
   senderName: string;
   totalLetters: number;
   onEnterVault: () => void;
+  onOpenMail?: () => void;
 }
 
 export const CuteDashboard: React.FC<CuteDashboardProps> = ({
@@ -14,6 +15,7 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
   senderName,
   totalLetters,
   onEnterVault,
+  onOpenMail,
 }) => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [hugSent, setHugSent] = useState(false);
@@ -124,6 +126,15 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
                 <span>Enter Your Letters Vault</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
+
+              {onOpenMail && (
+                <button
+                  onClick={onOpenMail}
+                  className="w-full py-3 px-4 rounded-2xl bg-zinc-900 text-[#F4C2C2] font-black text-xs border border-[#F4C2C2]/40 shadow flex items-center justify-center gap-2 active:scale-95 transition-all duration-200"
+                >
+                  <span>Daily Mailbox 📬</span>
+                </button>
+              )}
 
               <button
                 onClick={() => setShowInfoModal(true)}

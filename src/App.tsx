@@ -1,48 +1,62 @@
 import { useState, useEffect } from 'react';
-import { Letter } from './types';
+import { Letter, DailyMailEntry } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
+import { DAILY_MAIL } from './data/dailyMail';
 import { CuteDashboard } from './components/CuteDashboard';
 import { LetterScrollView } from './components/LetterScrollView';
+import { DailyMailbox } from './components/DailyMailbox';
 import { ShakeToOpenModal } from './components/ShakeToOpenModal';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
-import { ChevronLeft, LayoutList, X, Sparkles } from 'lucide-react';
+import { ChevronLeft, LayoutList, X, Sparkles, Mail } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+type View = 'dashboard' | 'letters' | 'mail';
+
 export function App() {
-  const [activeView, setActiveView] = useState<'dashboard' | 'letters'>('dashboard');
+  const [activeView, setActiveView] = useState<View>('dashboard');
   const [showAllDrawer, setShowAllDrawer] = useState<boolean>(false);
 
+  // Versioned to guarantee user's 4 custom letters immediately replace old cache
   const [letters] = useState<Letter[]>(() => {
-    const saved = localStorage.getItem('giftx_letters');
+    const saved = localStorage.getItem('giftx_letters_v3');
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return INITIAL_LETTERS;
-      }
+      try { return JSON.parse(saved); } catch { return INITIAL_LETTERS; }
     }
+    localStorage.removeItem('giftx_letters');
+    localStorage.removeItem('giftx_letters_v2');
+    localStorage.setItem('giftx_letters_v3', JSON.stringify(INITIAL_LETTERS));
     return INITIAL_LETTERS;
   });
 
   const [openedLetterIds, setOpenedLetterIds] = useState<string[]>(() => {
     const saved = localStorage.getItem('giftx_opened_letters');
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return [];
-      }
+      try { return JSON.parse(saved); } catch { return []; }
     }
     return [];
   });
 
-  // State for the shake-to-open interaction
+  // Daily mail state with persistence
+  const [mails, setMails] = useState<DailyMailEntry[]>(() => {
+    const saved = localStorage.getItem('giftx_daily_mail_v1');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DAILY_MAIL; }
+    }
+    return DAILY_MAIL;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('giftx_daily_mail_v1', JSON.stringify(mails));
+  }, [mails]);
+
+  const handleAddMail = (newMail: DailyMailEntry) => {
+    setMails((prev) => [newMail, ...prev]);
+  };
+
   const [shakeLetter, setShakeLetter] = useState<Letter | null>(null);
-  // State for reading the fully opened letter
   const [readLetter, setReadLetter] = useState<Letter | null>(null);
 
-  // Persist opened status
   useEffect(() => {
     localStorage.setItem('giftx_opened_letters', JSON.stringify(openedLetterIds));
   }, [openedLetterIds]);
@@ -71,71 +85,65 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-[#F4C2C2] text-black font-sans relative overflow-x-hidden selection:bg-black selection:text-[#F4C2C2]">
-      {/* Lightweight 60fps Floating Ambient Hearts */}
       <FloatingHearts />
 
-      {/* ── Dashboard view ── */}
+      {/* ── DASHBOARD VIEW ───────────────────────────────── */}
       {activeView === 'dashboard' && (
         <>
-          {/* Navbar */}
           <header className="sticky top-0 z-40 bg-[#F4C2C2]/95 border-b border-black/10 backdrop-blur-sm">
             <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
-              <div
-                onClick={handleSpawnLove}
-                className="flex items-center gap-2 cursor-pointer select-none"
-              >
-                <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center overflow-hidden p-0.5">
+              <div onClick={handleSpawnLove} className="flex items-center gap-2 cursor-pointer select-none">
+                <div className="w-7 h-7 rounded-lg bg-black overflow-hidden p-0.5">
                   <img src="/assets/images/cat-love-letter.jpg" alt="Cat" className="w-full h-full object-cover rounded" />
                 </div>
                 <span className="font-serif font-black text-base text-black tracking-tight">Hey Love :)</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => { setActiveView('letters'); }}
+                  onClick={() => setActiveView('mail')}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black/10 text-black active:scale-95 transition-transform"
+                >
+                  <Mail className="w-3.5 h-3.5" />
+                  <span>Mail</span>
+                </button>
+                <button
+                  onClick={() => setActiveView('letters')}
                   className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform shadow-md"
                 >
                   <span>Letters</span>
                   <span className="text-[10px] bg-[#F4C2C2] text-black px-1.5 rounded-full">{letters.length}</span>
                 </button>
-                <button
-                  onClick={handleSpawnLove}
-                  className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform"
-                >
+                <button onClick={handleSpawnLove} className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform">
                   <Sparkles className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
           </header>
-
-          {/* Dashboard content */}
           <main className="relative z-10 max-w-md mx-auto">
             <CuteDashboard
               partnerName={PARTNER_CONFIG.partnerName}
               senderName={PARTNER_CONFIG.senderName}
               totalLetters={letters.length}
               onEnterVault={() => setActiveView('letters')}
+              onOpenMail={() => setActiveView('mail')}
             />
           </main>
         </>
       )}
 
-      {/* ── Letters view: full-screen snap-scroll, NO sticky header eating space ── */}
+      {/* ── LETTERS VIEW (fullscreen snap-scroll) ────────── */}
       {activeView === 'letters' && (
         <div className="fixed inset-0 bg-[#F4C2C2] z-20 flex flex-col">
-
-          {/* Slim top bar */}
           <header className="shrink-0 z-30 bg-[#F4C2C2]/95 border-b border-black/10 backdrop-blur-sm">
-            <div className="max-w-md mx-auto px-4 h-13 flex items-center justify-between h-12">
+            <div className="max-w-md mx-auto px-4 h-12 flex items-center justify-between">
               <button
                 onClick={() => setActiveView('dashboard')}
-                className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:bg-black/20 transition-all active:scale-95"
+                className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:scale-95 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Home
               </button>
-
               <span className="font-serif font-black text-sm text-black tracking-tight">Open When... 💌</span>
-
               <button
                 onClick={() => setShowAllDrawer(true)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform"
@@ -145,8 +153,6 @@ export function App() {
               </button>
             </div>
           </header>
-
-          {/* Scroll container — takes remaining height, snap-y mandatory */}
           <div className="flex-1 overflow-y-scroll letter-scroll-container">
             <LetterScrollView
               letters={letters}
@@ -158,7 +164,31 @@ export function App() {
         </div>
       )}
 
-      {/* ── All Letters Drawer ── */}
+      {/* ── DAILY MAIL VIEW ──────────────────────────────── */}
+      {activeView === 'mail' && (
+        <div className="fixed inset-0 bg-[#F4C2C2] z-20 flex flex-col">
+          <header className="shrink-0 z-30 bg-[#F4C2C2]/95 border-b border-black/10 backdrop-blur-sm">
+            <div className="max-w-md mx-auto px-4 h-12 flex items-center justify-between">
+              <button
+                onClick={() => setActiveView('dashboard')}
+                className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:scale-95 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Home
+              </button>
+              <span className="font-serif font-black text-sm text-black tracking-tight">Daily Mail 📬</span>
+              <button onClick={handleSpawnLove} className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform">
+                <Sparkles className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </header>
+          <div className="flex-1 overflow-y-auto">
+            <DailyMailbox mails={mails} onAddMail={handleAddMail} />
+          </div>
+        </div>
+      )}
+
+      {/* ── ALL LETTERS DRAWER ───────────────────────────── */}
       {showAllDrawer && (
         <div className="fixed inset-0 z-50 bg-black/85 flex flex-col justify-end backdrop-blur-sm animate-fade-in">
           <div className="bg-gradient-to-b from-[#181417] via-[#120f12] to-[#0c0a0c] text-white rounded-t-[32px] border-t-2 border-[#F4C2C2]/50 max-h-[85vh] flex flex-col p-5 shadow-2xl">
@@ -174,7 +204,6 @@ export function App() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-
             <div className="overflow-y-auto py-4 space-y-2.5 flex-1">
               {letters.map((letter, idx) => {
                 const isOpened = openedLetterIds.includes(letter.id);
@@ -208,15 +237,13 @@ export function App() {
         </div>
       )}
 
-      {/* ── Shake-to-Open Modal ── */}
+      {/* ── MODALS ───────────────────────────────────────── */}
       <ShakeToOpenModal
         letter={shakeLetter}
         isOpen={Boolean(shakeLetter)}
         onClose={() => setShakeLetter(null)}
         onFullyOpened={handleShakeComplete}
       />
-
-      {/* ── Letter Reader Modal ── */}
       <LetterModal
         letter={readLetter}
         onClose={() => setReadLetter(null)}
