@@ -56,23 +56,23 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
         </p>
       </div>
 
-      {/* Main Black Card (Hardware-accelerated 60fps, no heavy blurs) */}
-      <div className="relative bg-[#09090b] rounded-[32px] border border-[#F4C2C2]/40 p-5 sm:p-8 shadow-2xl text-white overflow-hidden transform-gpu">
+      {/* Main Soft Velvet Black Card (Hardware-accelerated 60fps) */}
+      <div className="relative bg-gradient-to-br from-[#1a1518] via-[#120f12] to-[#0c0a0c] rounded-[32px] border border-[#F4C2C2]/35 p-5 sm:p-8 shadow-[0_15px_40px_rgba(0,0,0,0.22),0_0_25px_rgba(244,194,194,0.1)] text-white overflow-hidden transform-gpu">
         
         <div className="flex flex-col items-center text-center space-y-6">
           
-          {/* Mascot Image with Clean Dark Frame */}
+          {/* Mascot Image with Clean Soft Frame */}
           <div className="relative shrink-0 group">
-            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden bg-black p-2 border border-[#F4C2C2]/40 shadow-xl">
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-[24px] overflow-hidden bg-black p-2 border border-[#F4C2C2]/40 shadow-xl">
               <img
                 src="/assets/images/cat-love-letter.jpg"
                 alt="Cute Cat with Love Letter"
-                className="w-full h-full object-cover rounded-xl"
+                className="w-full h-full object-cover rounded-[18px]"
               />
             </div>
 
             {/* Floating sticker badge */}
-            <div className="absolute -top-2.5 -left-2 bg-[#F4C2C2] text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full shadow-md border border-black transform -rotate-6">
+            <div className="absolute -top-2.5 -left-2 bg-[#F4C2C2] text-black font-extrabold text-[10px] px-3 py-1 rounded-full shadow-md border border-black transform -rotate-6">
               Official Postcat 💌
             </div>
           </div>
@@ -92,22 +92,22 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
             </p>
 
             {/* Metrics Widgets */}
-            <div className="grid grid-cols-3 gap-2 pt-2 max-w-xs mx-auto">
-              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+            <div className="grid grid-cols-3 gap-2.5 pt-2 max-w-xs mx-auto">
+              <div className="bg-black/60 rounded-2xl p-2.5 border border-[#F4C2C2]/20 text-center shadow-sm">
                 <p className="text-lg sm:text-xl font-black text-[#F4C2C2] font-serif">∞</p>
                 <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
                   Thought of you
                 </p>
               </div>
 
-              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+              <div className="bg-black/60 rounded-2xl p-2.5 border border-[#F4C2C2]/20 text-center shadow-sm">
                 <p className="text-lg sm:text-xl font-black text-white font-serif">{totalLetters}</p>
                 <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
                   Sealed Letters
                 </p>
               </div>
 
-              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+              <div className="bg-black/60 rounded-2xl p-2.5 border border-[#F4C2C2]/20 text-center shadow-sm">
                 <p className="text-lg sm:text-xl font-black text-[#F4C2C2] font-serif">∞</p>
                 <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
                   Hugs Ready
@@ -119,7 +119,7 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
             <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-xs mx-auto">
               <button
                 onClick={onEnterVault}
-                className="w-full py-3.5 px-5 rounded-xl bg-[#F4C2C2] text-black font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                className="w-full py-3.5 px-5 rounded-2xl bg-[#F4C2C2] text-black font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all duration-200 border border-[#F4C2C2]"
               >
                 <span>Enter Your Letters Vault</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -127,7 +127,7 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
 
               <button
                 onClick={() => setShowInfoModal(true)}
-                className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 text-white font-bold text-xs border border-zinc-800 flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
+                className="w-full py-2.5 px-4 rounded-2xl bg-black/60 text-white font-bold text-xs border border-zinc-700/80 flex items-center justify-center gap-1.5 active:scale-95 transition-all duration-200"
               >
                 <BookOpen className="w-3.5 h-3.5 text-[#F4C2C2]" />
                 <span>About This Website</span>

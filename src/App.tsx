@@ -181,35 +181,35 @@ export function App() {
 
       {/* Drawer: All Letters Vault (Opens only when she taps "All") */}
       {showAllDrawer && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex flex-col justify-end animate-fade-in">
-          <div className="bg-[#09090b] text-white rounded-t-3xl border-t-2 border-[#F4C2C2]/50 max-h-[85vh] flex flex-col p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/85 flex flex-col justify-end animate-fade-in backdrop-blur-sm">
+          <div className="bg-gradient-to-b from-[#181417] via-[#120f12] to-[#0c0a0c] text-white rounded-t-[32px] border-t-2 border-[#F4C2C2]/50 max-h-[85vh] flex flex-col p-5 shadow-2xl">
             
             {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-800/80">
               <div>
                 <h3 className="font-serif font-black text-lg text-white">All Letters</h3>
                 <p className="text-xs text-[#F4C2C2]">{openedLetterIds.length} of {letters.length} unsealed</p>
               </div>
               <button
                 onClick={() => setShowAllDrawer(false)}
-                className="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white"
+                className="p-2 rounded-full bg-black/60 text-zinc-400 hover:text-white border border-zinc-800 active:scale-90 transition-transform"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Scrollable List of Letters */}
-            <div className="overflow-y-auto py-4 space-y-3 flex-1">
+            <div className="overflow-y-auto py-4 space-y-2.5 flex-1">
               {letters.map((letter, idx) => {
                 const isOpened = openedLetterIds.includes(letter.id);
                 return (
                   <div
                     key={letter.id}
                     onClick={() => handleInitiateOpen(letter)}
-                    className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-[#F4C2C2]/60 active:scale-[0.98] transition-all flex items-center justify-between cursor-pointer"
+                    className="p-3.5 rounded-2xl bg-black/60 border border-[#F4C2C2]/20 hover:border-[#F4C2C2]/60 active:scale-[0.98] transition-all flex items-center justify-between cursor-pointer shadow-sm"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="w-8 h-8 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-xs shrink-0">
+                      <span className="w-8 h-8 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-xs shrink-0 shadow-sm">
                         {letter.sealEmoji || '💌'}
                       </span>
                       <div className="min-w-0">
@@ -222,9 +222,9 @@ export function App() {
                       </div>
                     </div>
 
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ml-2 ${
                       isOpened 
-                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' 
+                        ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800' 
                         : 'bg-zinc-900 text-[#F4C2C2] border border-[#F4C2C2]/30'
                     }`}>
                       {isOpened ? 'Read' : 'Sealed'}

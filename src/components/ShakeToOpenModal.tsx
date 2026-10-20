@@ -221,9 +221,9 @@ export const ShakeToOpenModal: React.FC<ShakeToOpenModalProps> = ({
         >
 
           {/* LAYER A: Base Envelope Backplate (Interior Lining) */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-zinc-900 via-zinc-950 to-black border-2 border-[#F4C2C2]/40 shadow-2xl overflow-hidden">
+          <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-[#1a1518] via-[#120f12] to-[#0c0a0c] border border-[#F4C2C2]/40 shadow-2xl overflow-hidden">
             {/* Subtle silk lining pattern */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#F4C2C2_1px,transparent_1px)] [background-size:12px_12px]" />
+            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#F4C2C2_1px,transparent_1px)] [background-size:12px_12px]" />
           </div>
 
           {/* 
@@ -362,7 +362,7 @@ export const ShakeToOpenModal: React.FC<ShakeToOpenModalProps> = ({
             Does NOT show during Step 1, 2, or 3.
           */}
           {step === 0 && (
-            <div className="absolute inset-0 z-40 rounded-2xl overflow-hidden pointer-events-none animate-pop-in">
+            <div className="absolute inset-0 z-40 rounded-[28px] overflow-hidden pointer-events-none animate-pop-in">
               {/* Vertical Silk Ribbon */}
               <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-8 bg-gradient-to-r from-pink-300 via-[#F4C2C2] to-pink-400 shadow-xl border-x border-pink-200/50" />
               {/* Horizontal Silk Ribbon */}

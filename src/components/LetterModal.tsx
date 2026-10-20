@@ -28,16 +28,16 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 flex items-center justify-center p-3 sm:p-5">
       
-      {/* Real Letter Stationery in Jet Black */}
-      <div className="relative w-full max-w-lg bg-[#09090b] text-white rounded-3xl shadow-2xl border border-[#F4C2C2]/40 overflow-hidden my-4 max-h-[92vh] flex flex-col">
+      {/* Real Letter Stationery in Soft Velvet Black */}
+      <div className="relative w-full max-w-lg bg-gradient-to-br from-[#181417] via-[#120f12] to-[#0c0a0c] text-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.3),0_0_30px_rgba(244,194,194,0.12)] border border-[#F4C2C2]/40 overflow-hidden my-4 max-h-[92vh] flex flex-col">
         
         {/* Baby Pink Top Stationery Line */}
         <div className="h-1.5 bg-[#F4C2C2] shrink-0" />
 
         {/* Top Header Row with Close Button */}
-        <div className="p-4 sm:p-6 pb-3 border-b border-zinc-850 flex items-center justify-between shrink-0">
+        <div className="p-4 sm:p-6 pb-3 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-xs">
+            <span className="w-7 h-7 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-xs shadow-sm">
               {letter.sealEmoji || '💌'}
             </span>
             <span className="text-[10px] uppercase tracking-widest font-bold text-[#F4C2C2]">
@@ -47,7 +47,7 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+            className="p-2 rounded-full bg-black/60 text-zinc-400 hover:text-white border border-zinc-800 active:scale-90 transition-transform"
             aria-label="Close letter"
           >
             <X className="w-4 h-4" />
@@ -146,13 +146,13 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
         </div>
 
         {/* Bottom Actions: Hug & Put Back */}
-        <div className="p-4 border-t border-zinc-850 bg-black/60 flex items-center justify-between gap-2 shrink-0">
+        <div className="p-4 border-t border-zinc-800/80 bg-black/60 flex items-center justify-between gap-2.5 shrink-0">
           <button
             onClick={handleSendHug}
-            className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-xs font-bold active:scale-95 transition-transform ${
+            className={`flex-1 inline-flex items-center justify-center gap-1.5 py-3 px-4 rounded-2xl text-xs font-black active:scale-95 transition-all shadow-md ${
               hugSent
                 ? 'bg-emerald-500 text-white'
-                : 'bg-[#F4C2C2] text-black shadow-md'
+                : 'bg-[#F4C2C2] text-black hover:bg-pink-300'
             }`}
           >
             {hugSent ? (
@@ -170,7 +170,7 @@ export const LetterModal: React.FC<LetterModalProps> = ({ letter, onClose }) => 
 
           <button
             onClick={onClose}
-            className="px-3 py-2.5 text-xs text-zinc-400 hover:text-white"
+            className="px-4 py-3 rounded-2xl text-xs text-zinc-400 hover:text-white bg-black/40 border border-zinc-800 active:scale-95 transition-all"
           >
             Put back
           </button>
