@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Letter, DailyMailEntry } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
-import { DAILY_MAIL } from './data/dailyMail';
+import { getLocalMails, saveLocalMails, markMailAsDeleted, pushCloudMails, syncMailbox } from './utils/mailSync';
 import { CuteDashboard } from './components/CuteDashboard';
 import { LetterScrollView } from './components/LetterScrollView';
 import { DailyMailbox } from './components/DailyMailbox';
@@ -39,29 +39,101 @@ export function App() {
     return [];
   });
 
-  // Daily mail state with persistence
-  const [mails, setMails] = useState<DailyMailEntry[]>(() => {
-    const saved = localStorage.getItem('giftx_daily_mail_v1');
-    if (saved) {
-      try { return JSON.parse(saved); } catch { return DAILY_MAIL; }
-    }
-    return DAILY_MAIL;
-  });
+  // Daily mail state with persistence & cloud sync
+  const [mails, setMails] = useState<DailyMailEntry[]>(getLocalMails);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const mailsRef = useRef<DailyMailEntry[]>(mails);
 
   useEffect(() => {
-    localStorage.setItem('giftx_daily_mail_v1', JSON.stringify(mails));
+    mailsRef.current = mails;
+    saveLocalMails(mails);
   }, [mails]);
 
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      const { mails: syncedMails, updated } = await syncMailbox(mailsRef.current);
+      if (updated) {
+        setMails(syncedMails);
+      }
+    } catch (err) {
+      console.warn('[App] Manual sync error:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const performSync = async () => {
+      try {
+        const { mails: syncedMails, updated } = await syncMailbox(mailsRef.current);
+        if (isMounted && updated) {
+          setMails(syncedMails);
+        }
+      } catch (err) {
+        console.warn('[App] Background sync error:', err);
+      }
+    };
+
+    // Run sync right on load
+    performSync();
+
+    // Auto-poll every 20 seconds
+    const interval = setInterval(performSync, 20000);
+
+    // Sync when user switches back to the tab or focuses
+    const handleFocus = () => performSync();
+    window.addEventListener('focus', handleFocus);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') performSync();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, []);
+
   const handleAddMail = (newMail: DailyMailEntry) => {
-    setMails((prev) => [newMail, ...prev]);
+    const mailWithTimestamps: DailyMailEntry = {
+      ...newMail,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+    setMails((prev) => {
+      const updated = [mailWithTimestamps, ...prev.filter((m) => m.id !== mailWithTimestamps.id)];
+      saveLocalMails(updated);
+      pushCloudMails(updated).catch((e) => console.warn('Push error:', e));
+      return updated;
+    });
   };
 
   const handleUpdateMail = (updatedMail: DailyMailEntry) => {
-    setMails((prev) => prev.map((m) => (m.id === updatedMail.id ? updatedMail : m)));
+    const mailWithTimestamp: DailyMailEntry = {
+      ...updatedMail,
+      updatedAt: Date.now(),
+    };
+    setMails((prev) => {
+      const updated = prev.map((m) => (m.id === mailWithTimestamp.id ? mailWithTimestamp : m));
+      saveLocalMails(updated);
+      pushCloudMails(updated).catch((e) => console.warn('Push error:', e));
+      return updated;
+    });
   };
 
   const handleDeleteMail = (id: string) => {
-    setMails((prev) => prev.filter((m) => m.id !== id));
+    markMailAsDeleted(id);
+    setMails((prev) => {
+      const updated = prev.filter((m) => m.id !== id);
+      saveLocalMails(updated);
+      pushCloudMails(updated).catch((e) => console.warn('Push error:', e));
+      return updated;
+    });
   };
 
   // Track seen/read mail IDs to power the new mail alert popup
@@ -235,6 +307,8 @@ export function App() {
               onAddMail={handleAddMail}
               onUpdateMail={handleUpdateMail}
               onDeleteMail={handleDeleteMail}
+              isSyncing={isSyncing}
+              onSync={handleManualSync}
             />
           </div>
         </div>

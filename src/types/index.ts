@@ -54,4 +54,6 @@ export interface DailyMailEntry {
   body: string[];               // Paragraphs
   deployAt: string;             // ISO 8601 datetime — revealed only after this moment
   emoji?: string;
+  createdAt?: number;
+  updatedAt?: number;
 }

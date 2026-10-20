@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DailyMailEntry, DailyMailAuthor } from '../types';
-import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles, Trash2, Pencil } from 'lucide-react';
+import { Mail, Lock, ChevronDown, ChevronUp, Pen, Plus, X, Calendar, Clock, Sparkles, Trash2, Pencil, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface DailyMailboxProps {
@@ -8,6 +8,8 @@ interface DailyMailboxProps {
   onAddMail: (mail: DailyMailEntry) => void;
   onUpdateMail: (mail: DailyMailEntry) => void;
   onDeleteMail: (id: string) => void;
+  isSyncing?: boolean;
+  onSync?: () => void;
 }
 
 function isUnlocked(deployAt: string): boolean {
@@ -41,7 +43,14 @@ function getLocalDateTimeString(date: Date): string {
 
 const EMOJI_OPTIONS = ['💌', '💖', '🌸', '🌙', '☕', '✨', '🌹', '🕊️'];
 
-export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, onUpdateMail, onDeleteMail }) => {
+export const DailyMailbox: React.FC<DailyMailboxProps> = ({
+  mails,
+  onAddMail,
+  onUpdateMail,
+  onDeleteMail,
+  isSyncing = false,
+  onSync,
+}) => {
   const [openId, setOpenId] = useState<string | null>(null);
   const [showCompose, setShowCompose] = useState<boolean>(false);
   const [editingMail, setEditingMail] = useState<DailyMailEntry | null>(null);
@@ -167,8 +176,8 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
           Write letters to each other anytime. Choose the exact date & time for it to unlock!
         </p>
 
-        {/* Primary Compose Button */}
-        <div className="mt-4 flex justify-center">
+        {/* Primary Action Buttons */}
+        <div className="mt-4 flex items-center justify-center gap-2">
           <button
             onClick={handleOpenNewCompose}
             className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-black text-[#F4C2C2] font-black text-xs sm:text-sm shadow-xl active:scale-95 transition-all border border-[#F4C2C2]/40"
@@ -177,6 +186,24 @@ export const DailyMailbox: React.FC<DailyMailboxProps> = ({ mails, onAddMail, on
             <span>Write a New Letter</span>
             <Plus className="w-3.5 h-3.5" />
           </button>
+
+          {onSync && (
+            <button
+              onClick={onSync}
+              disabled={isSyncing}
+              title="Sync latest letters with Arti"
+              className="inline-flex items-center gap-1.5 px-3.5 py-3 rounded-2xl bg-black/10 hover:bg-black/20 text-black font-bold text-xs shadow-sm active:scale-95 transition-all border border-black/10"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-pink-600' : ''}`} />
+              <span className="hidden sm:inline">{isSyncing ? 'Syncing...' : 'Sync'}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Cloud Status Badge */}
+        <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/5 text-[10px] font-bold text-black/60">
+          <span className={`w-1.5 h-1.5 rounded-full ${isSyncing ? 'bg-pink-500 animate-ping' : 'bg-emerald-500'}`} />
+          <span>{isSyncing ? 'Syncing with cloud...' : 'Live Cloud Sync Active ☁️'}</span>
         </div>
       </div>
 
