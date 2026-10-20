@@ -4,22 +4,70 @@
 
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #F4C2C2;
+    color: #000000;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-/* Custom modern scrollbar */
+.font-serif {
+  font-family: 'Newsreader', Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+.signature-font {
+  font-family: 'Caveat', cursive, Georgia;
+}
+
+@keyframes floatHeart {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-50vh) rotate(15deg) scale(1);
+    opacity: 0.3;
+  }
+  85% {
+    opacity: 0.25;
+  }
+  100% {
+    transform: translateY(-110vh) rotate(-15deg) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animate-float-heart {
+  animation: floatHeart linear infinite;
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 18s linear infinite;
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F4C2C2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #000000;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #27272a;
 }

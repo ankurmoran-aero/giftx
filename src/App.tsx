@@ -1,239 +1,184 @@
-import { useState, useMemo } from 'react';
-import { MOCK_GIFTS } from './data/mockGifts';
-import { Category, GiftItem, RecipientType, CartItem } from './types';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { GiftFilter } from './components/GiftFilter';
-import { GiftCard } from './components/GiftCard';
-import { AiGiftFinderModal } from './components/AiGiftFinderModal';
-import { SecretSantaModal } from './components/SecretSantaModal';
-import { WishlistDrawer } from './components/WishlistDrawer';
-import { CartDrawer } from './components/CartDrawer';
-import { Footer } from './components/Footer';
-import { Sparkles, PackageOpen } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Letter, MoodCategory } from './types';
+import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
+import { Header } from './components/Header';
+import { EnvelopeCard } from './components/EnvelopeCard';
+import { LetterModal } from './components/LetterModal';
+import { FloatingHearts } from './components/FloatingHearts';
+import { AddLetterModal } from './components/AddLetterModal';
+import { Heart, Plus, Sparkles } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 export function App() {
-  const [gifts] = useState<GiftItem[]>(MOCK_GIFTS);
-  const [wishlist, setWishlist] = useState<GiftItem[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [letters, setLetters] = useState<Letter[]>(() => {
+    const saved = localStorage.getItem('giftx_letters');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return INITIAL_LETTERS;
+      }
+    }
+    return INITIAL_LETTERS;
+  });
 
-  // Modals state
-  const [isAiFinderOpen, setIsAiFinderOpen] = useState(false);
-  const [isSecretSantaOpen, setIsSecretSantaOpen] = useState(false);
-  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [openedLetterIds, setOpenedLetterIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('giftx_opened_letters');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  });
 
-  // Filters state
-  const [category, setCategory] = useState<Category>('all');
-  const [recipient, setRecipient] = useState<RecipientType>('anyone');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [maxPrice, setMaxPrice] = useState(300);
+  const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<MoodCategory>('all');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Filtered gifts computation
-  const filteredGifts = useMemo(() => {
-    return gifts.filter((gift) => {
-      // Category filter
-      if (category !== 'all' && gift.category !== category) {
-        return false;
-      }
-      // Recipient filter
-      if (recipient !== 'anyone' && !gift.recipient.includes(recipient)) {
-        return false;
-      }
-      // Price filter
-      if (gift.price > maxPrice) {
-        return false;
-      }
-      // Search query
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesTitle = gift.title.toLowerCase().includes(query);
-        const matchesDesc = gift.description.toLowerCase().includes(query);
-        const matchesTag = gift.tags.some((t) => t.toLowerCase().includes(query));
-        if (!matchesTitle && !matchesDesc && !matchesTag) {
-          return false;
-        }
-      }
-      return true;
+  // Persist opened status
+  useEffect(() => {
+    localStorage.setItem('giftx_opened_letters', JSON.stringify(openedLetterIds));
+  }, [openedLetterIds]);
+
+  // Persist custom letters if added
+  useEffect(() => {
+    localStorage.setItem('giftx_letters', JSON.stringify(letters));
+  }, [letters]);
+
+  // Filter letters by selected mood category
+  const filteredLetters = useMemo(() => {
+    if (selectedCategory === 'all') return letters;
+    return letters.filter((l) => l.category === selectedCategory);
+  }, [letters, selectedCategory]);
+
+  const handleOpenLetter = (letter: Letter) => {
+    setSelectedLetter(letter);
+    if (!openedLetterIds.includes(letter.id)) {
+      setOpenedLetterIds((prev) => [...prev, letter.id]);
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#F4C2C2', '#ffffff', '#000000', '#f43f5e'],
+      });
+    }
+  };
+
+  const handleAddLetter = (newLetter: Letter) => {
+    setLetters((prev) => [newLetter, ...prev]);
+  };
+
+  const handleSpawnLove = () => {
+    confetti({
+      particleCount: 55,
+      spread: 80,
+      origin: { y: 0.4 },
+      colors: ['#F4C2C2', '#000000', '#ffffff', '#fb7185'],
     });
-  }, [gifts, category, recipient, maxPrice, searchQuery]);
-
-  // Wishlist handler
-  const handleToggleWishlist = (gift: GiftItem) => {
-    setWishlist((prev) => {
-      const exists = prev.some((item) => item.id === gift.id);
-      if (exists) {
-        return prev.filter((item) => item.id !== gift.id);
-      }
-      return [...prev, gift];
-    });
   };
-
-  // Cart handlers
-  const handleAddToCart = (gift: GiftItem) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.gift.id === gift.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.gift.id === gift.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prev, { gift, quantity: 1 }];
-    });
-  };
-
-  const handleUpdateCartQuantity = (id: string, delta: number) => {
-    setCart((prev) =>
-      prev
-        .map((item) => {
-          if (item.gift.id === id) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter((item): item is CartItem => item !== null)
-    );
-  };
-
-  const handleRemoveFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.gift.id !== id));
-  };
-
-  const handleClearCart = () => setCart([]);
-
-  const handleResetFilters = () => {
-    setCategory('all');
-    setRecipient('anyone');
-    setSearchQuery('');
-    setMaxPrice(300);
-  };
-
-  const wishlistIds = useMemo(() => wishlist.map((w) => w.id), [wishlist]);
-  const cartGiftIds = useMemo(() => cart.map((c) => c.gift.id), [cart]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col selection:bg-rose-500 selection:text-white">
-      {/* Sticky Navigation */}
-      <Navbar
-        wishlistCount={wishlist.length}
-        cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenCart={() => setIsCartOpen(true)}
-        onOpenAiFinder={() => setIsAiFinderOpen(true)}
-        onOpenSecretSanta={() => setIsSecretSantaOpen(true)}
-        onNavigateHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      />
+    <div className="min-h-screen bg-[#F4C2C2] text-black font-sans relative overflow-x-hidden selection:bg-black selection:text-[#F4C2C2]">
+      {/* Floating Ambient Hearts & Petals */}
+      <FloatingHearts />
 
-      <main className="flex-1">
-        {/* Hero Banner */}
-        <Hero
-          onOpenAiFinder={() => setIsAiFinderOpen(true)}
-          onOpenSecretSanta={() => setIsSecretSantaOpen(true)}
-        />
-
-        {/* Collection Section */}
-        <div id="catalog" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-          {/* Filters Bar */}
-          <GiftFilter
-            selectedCategory={category}
-            selectedRecipient={recipient}
-            searchQuery={searchQuery}
-            maxPrice={maxPrice}
-            onSelectCategory={setCategory}
-            onSelectRecipient={setRecipient}
-            onSearchChange={setSearchQuery}
-            onMaxPriceChange={setMaxPrice}
-            onReset={handleResetFilters}
-          />
-
-          {/* Catalog Header */}
-          <div className="mt-8 mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-                Curated Collection
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Showing {filteredGifts.length} {filteredGifts.length === 1 ? 'gift idea' : 'gift ideas'}
-              </p>
+      {/* Top Cute Navbar Bar */}
+      <header className="sticky top-0 z-40 bg-[#F4C2C2]/90 backdrop-blur-md border-b border-black/10">
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div 
+            onClick={handleSpawnLove}
+            className="flex items-center gap-2 cursor-pointer group select-none"
+          >
+            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform">
+              <Heart className="w-5 h-5 fill-[#F4C2C2]" />
             </div>
-
-            <button
-              onClick={() => setIsAiFinderOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl border border-purple-200/80 transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-              <span>Ask AI Matcher</span>
-            </button>
+            <div>
+              <span className="font-serif font-black text-lg sm:text-xl text-black tracking-tight">
+                Open When<span className="text-black">...</span>
+              </span>
+            </div>
           </div>
 
-          {/* Gifts Grid */}
-          {filteredGifts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredGifts.map((gift) => (
-                <GiftCard
-                  key={gift.id}
-                  gift={gift}
-                  isWishlisted={wishlistIds.includes(gift.id)}
-                  isInCart={cartGiftIds.includes(gift.id)}
-                  onToggleWishlist={handleToggleWishlist}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-12 text-center max-w-lg mx-auto shadow-sm my-8">
-              <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 mx-auto flex items-center justify-center mb-4">
-                <PackageOpen className="w-8 h-8" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900">No gifts match your filter</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Try widening your price range or resetting the recipient and category filters.
-              </p>
-              <button
-                onClick={handleResetFilters}
-                className="mt-5 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-rose-600 transition-colors"
-              >
-                Reset All Filters
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-black text-[#F4C2C2] hover:bg-zinc-900 shadow-md transition-all active:scale-95"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#F4C2C2]" />
+              <span className="hidden sm:inline">Add Letter</span>
+            </button>
+
+            <button
+              onClick={handleSpawnLove}
+              className="p-2 rounded-xl bg-black text-[#F4C2C2] hover:scale-105 transition-all shadow-md active:scale-95"
+              title="Shower with love"
+              aria-label="Shower with love"
+            >
+              <Sparkles className="w-4 h-4 text-[#F4C2C2]" />
+            </button>
+          </div>
         </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 relative z-10">
+        {/* Banner with Anniversary/Love Days Counter & Mood Filter Tabs */}
+        <Header
+          partnerName={PARTNER_CONFIG.partnerName}
+          senderName={PARTNER_CONFIG.senderName}
+          anniversaryDate={PARTNER_CONFIG.anniversaryDate}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+          lettersCount={letters.length}
+          openedCount={openedLetterIds.length}
+        />
+
+        {/* Letters Grid: Black Cards on Baby Pink Background */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mt-4">
+          {filteredLetters.map((letter) => (
+            <EnvelopeCard
+              key={letter.id}
+              letter={letter}
+              isOpened={openedLetterIds.includes(letter.id)}
+              onOpen={handleOpenLetter}
+            />
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredLetters.length === 0 && (
+          <div className="text-center py-16 bg-black text-white rounded-3xl border border-black max-w-md mx-auto my-8 p-8 shadow-xl">
+            <span className="text-3xl">💌</span>
+            <h3 className="font-serif font-bold text-white text-base mt-2">No letters in this mood</h3>
+            <p className="text-xs text-zinc-400 mt-1">Try switching to "All Letters" or add one for this moment.</p>
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className="mt-4 px-4 py-2 bg-[#F4C2C2] text-black rounded-xl text-xs font-bold hover:bg-white transition-colors"
+            >
+              View All Letters
+            </button>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
-      <Footer />
+      <footer className="border-t border-black/10 py-8 text-center text-xs text-black/70 font-serif">
+        <p>Made with all my heart for {PARTNER_CONFIG.partnerName} • Always only a letter away</p>
+      </footer>
 
-      {/* Slide-over Drawers and Modals */}
-      <AiGiftFinderModal
-        isOpen={isAiFinderOpen}
-        gifts={gifts}
-        onClose={() => setIsAiFinderOpen(false)}
-        onAddToCart={handleAddToCart}
-        onToggleWishlist={handleToggleWishlist}
-        wishlistIds={wishlistIds}
+      {/* Modal: Opened Letter Reader */}
+      <LetterModal
+        letter={selectedLetter}
+        onClose={() => setSelectedLetter(null)}
       />
 
-      <SecretSantaModal
-        isOpen={isSecretSantaOpen}
-        onClose={() => setIsSecretSantaOpen(false)}
-      />
-
-      <WishlistDrawer
-        isOpen={isWishlistOpen}
-        wishlist={wishlist}
-        onClose={() => setIsWishlistOpen(false)}
-        onRemove={handleToggleWishlist}
-        onAddToCart={handleAddToCart}
-      />
-
-      <CartDrawer
-        isOpen={isCartOpen}
-        cart={cart}
-        onClose={() => setIsCartOpen(false)}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveFromCart}
-        onClearCart={handleClearCart}
+      {/* Modal: Add New Letter */}
+      <AddLetterModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAddLetter}
       />
     </div>
   );

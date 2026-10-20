@@ -8,35 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#fdf4f5',
-          100: '#fbe8eb',
-          200: '#f7d5da',
-          300: '#f0b3bc',
-          400: '#e58595',
-          500: '#d75a71',
-          600: '#c23c57',
-          700: '#a32d44',
-          800: '#88283c',
-          900: '#732537',
-          950: '#410f1b',
+        babypink: {
+          DEFAULT: '#F4C2C2',
+          50: '#fff5f5',
+          100: '#ffebed',
+          200: '#F4C2C2',
+          300: '#e8a5a5',
+          400: '#dc8888',
+          500: '#ce6b6b',
+          600: '#b85050',
+          700: '#9b3d3d',
+          800: '#803434',
+          900: '#6b2f2f',
         },
-        accent: {
-          50: '#fbf5ff',
-          100: '#f5ebff',
-          200: '#ebd6ff',
-          300: '#dab3ff',
-          400: '#c182fe',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7e22ce',
-          800: '#6b21a8',
-          900: '#581c87',
-          950: '#3b0764',
-        }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        cursive: ['Caveat', 'cursive'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
