@@ -71,8 +71,8 @@ export const EnvelopeCard: React.FC<EnvelopeCardProps> = ({
           <div className="w-6 h-6 rounded-full bg-[#F4C2C2] text-black text-[11px] font-bold flex items-center justify-center shadow-sm">
             <span className="transform -rotate-6">{letter.sealEmoji || '💌'}</span>
           </div>
-          <span className="text-[10px] text-zinc-400 truncate max-w-[140px]">
-            {letter.previewSnippet}
+          <span className="text-[10px] text-zinc-400 truncate max-w-[150px]">
+            {isOpened ? (letter.previewSnippet || 'Read letter') : '🔒 3-Stage Shake to Open'}
           </span>
         </div>
 
