@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Letter } from '../types';
 import { EnvelopeCard } from './EnvelopeCard';
-import { ChevronLeft, ChevronRight, LayoutGrid, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Mail, Sparkles, LayoutList } from 'lucide-react';
 
 interface FocusedLetterViewProps {
   letters: Letter[];
@@ -33,76 +33,89 @@ export const FocusedLetterView: React.FC<FocusedLetterViewProps> = ({
   const isOpened = openedLetterIds.includes(currentLetter.id);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 pt-4 pb-12 flex flex-col items-center animate-fade-in">
+    <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-between min-h-[70vh] py-4 select-none animate-fade-in">
       
-      {/* Top Controls: Letter Counter & "View All" Button */}
-      <div className="w-full flex items-center justify-between mb-6">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black text-[#F4C2C2] text-xs font-bold shadow-md">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>
-            Letter {currentIndex + 1} of {letters.length}
-          </span>
-        </div>
+      {/* 1. Minimal Header Counter */}
+      <div className="w-full flex items-center justify-between px-2 mb-4">
+        <span className="text-xs font-serif italic text-black/70">
+          Letter {currentIndex + 1} of {letters.length}
+        </span>
 
         <button
           onClick={onViewAllLetters}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/85 hover:bg-black text-white hover:text-[#F4C2C2] text-xs font-bold shadow-md transition-all border border-black/80"
+          className="text-[11px] font-bold text-black/80 hover:text-black flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/10 active:bg-black/20 transition-colors"
         >
-          <LayoutGrid className="w-3.5 h-3.5 text-[#F4C2C2]" />
-          <span>View All Envelopes</span>
+          <LayoutList className="w-3 h-3" />
+          <span>All ({letters.length})</span>
         </button>
       </div>
 
-      {/* Main Single Envelope Presentation */}
-      <div className="w-full relative group">
-        <EnvelopeCard
-          letter={currentLetter}
-          isOpened={isOpened}
-          onOpen={() => onOpenLetter(currentLetter)}
-        />
-      </div>
-
-      {/* Navigation Controls: Previous / Next & Stepper Dots */}
-      <div className="mt-8 flex items-center justify-between w-full max-w-sm">
+      {/* 2. Center Stage: The Envelope with Left/Right Navigation */}
+      <div className="w-full relative my-auto">
+        {/* Floating Left Arrow on mobile edge */}
         <button
           onClick={handlePrev}
-          className="flex items-center gap-1 px-4 py-2 rounded-2xl bg-black text-[#F4C2C2] hover:bg-zinc-900 text-xs font-bold shadow-md transition-all active:scale-95"
+          className="absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/80 text-[#F4C2C2] flex items-center justify-center shadow-md active:scale-90 transition-transform"
           aria-label="Previous Letter"
         >
           <ChevronLeft className="w-4 h-4" />
-          <span>Previous</span>
         </button>
 
-        {/* Dots */}
-        <div className="flex gap-1.5">
+        {/* The Envelope */}
+        <div className="px-1">
+          <EnvelopeCard
+            letter={currentLetter}
+            isOpened={isOpened}
+            onOpen={() => onOpenLetter(currentLetter)}
+          />
+        </div>
+
+        {/* Floating Right Arrow on mobile edge */}
+        <button
+          onClick={handleNext}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/80 text-[#F4C2C2] flex items-center justify-center shadow-md active:scale-90 transition-transform"
+          aria-label="Next Letter"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* 3. Bottom Action: One primary thumb button & subtle pagination */}
+      <div className="w-full mt-6 space-y-4 text-center">
+        {/* Primary Unseal Button */}
+        <button
+          onClick={() => onOpenLetter(currentLetter)}
+          className="w-full py-3.5 px-6 rounded-2xl bg-black text-[#F4C2C2] font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
+        >
+          {isOpened ? (
+            <>
+              <Sparkles className="w-4 h-4 text-[#F4C2C2]" />
+              <span>Read Again</span>
+            </>
+          ) : (
+            <>
+              <Mail className="w-4 h-4 text-[#F4C2C2]" />
+              <span>Shake or Tap to Unseal</span>
+            </>
+          )}
+        </button>
+
+        {/* Minimal dot indicators */}
+        <div className="flex justify-center gap-1.5 pt-1">
           {letters.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`w-2.5 h-2.5 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-all ${
                 idx === currentIndex
-                  ? 'bg-black w-6 shadow-sm'
-                  : 'bg-black/25 hover:bg-black/50'
+                  ? 'bg-black w-5'
+                  : 'bg-black/25 w-1.5'
               }`}
               aria-label={`Go to letter ${idx + 1}`}
             />
           ))}
         </div>
-
-        <button
-          onClick={handleNext}
-          className="flex items-center gap-1 px-4 py-2 rounded-2xl bg-black text-[#F4C2C2] hover:bg-zinc-900 text-xs font-bold shadow-md transition-all active:scale-95"
-          aria-label="Next Letter"
-        >
-          <span>Next</span>
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
-
-      {/* Bottom Hint */}
-      <p className="mt-6 text-xs text-black/75 font-serif italic text-center">
-        Tap the envelope above to enter the 3-shake unsealing experience.
-      </p>
     </div>
   );
 };

@@ -9,20 +9,20 @@ interface HeartParticle {
   emoji: string;
 }
 
-const EMOJIS = ['❤️', '💖', '✨', '🌸', '💌', '💕', '🌷'];
+const EMOJIS = ['❤️', '✨', '💌', '🌸', '💕'];
 
 export const FloatingHearts: React.FC = () => {
   const [hearts, setHearts] = useState<HeartParticle[]>([]);
 
   useEffect(() => {
-    // Generate initial floating particles
-    const initialHearts: HeartParticle[] = Array.from({ length: 14 }).map((_, i) => ({
+    // Keep it lightweight (only 6 particles) for 60fps mobile performance
+    const initialHearts: HeartParticle[] = Array.from({ length: 6 }).map((_, i) => ({
       id: i,
-      x: Math.random() * 95, // 0 to 95vw
-      size: Math.random() * 12 + 14, // 14px to 26px
-      duration: Math.random() * 8 + 12, // 12s to 20s
-      delay: Math.random() * 8,
-      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+      x: 10 + i * 16, // evenly distributed across screen width
+      size: 16 + (i % 3) * 4,
+      duration: 14 + (i % 4) * 2,
+      delay: i * 2.2,
+      emoji: EMOJIS[i % EMOJIS.length],
     }));
     setHearts(initialHearts);
   }, []);
@@ -32,7 +32,7 @@ export const FloatingHearts: React.FC = () => {
       {hearts.map((heart) => (
         <span
           key={heart.id}
-          className="absolute bottom-[-40px] opacity-25 select-none animate-float-heart"
+          className="absolute bottom-[-30px] opacity-25 select-none animate-float-heart will-change-transform"
           style={{
             left: `${heart.x}vw`,
             fontSize: `${heart.size}px`,

@@ -42,130 +42,120 @@ export const CuteDashboard: React.FC<CuteDashboardProps> = ({
     <div className="relative z-10 max-w-4xl mx-auto px-4 pt-6 pb-20">
 
       {/* Top Greeting: "Hey Love :)" */}
-      <div className="text-center mb-8 sm:mb-12">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-[#F4C2C2] text-xs font-bold mb-4 shadow-lg animate-pulse-subtle">
+      <div className="text-center mb-6 sm:mb-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black text-[#F4C2C2] text-xs font-bold mb-3 shadow-md">
           <Sparkles className="w-3.5 h-3.5 text-[#F4C2C2]" />
           <span>Made strictly for your eyes only</span>
         </div>
 
-        <h1 className="text-5xl sm:text-7xl font-cursive font-bold text-black tracking-tight drop-shadow-sm select-none">
+        <h1 className="text-5xl sm:text-7xl font-cursive font-bold text-black tracking-tight select-none">
           Hey Love :)
         </h1>
-        <p className="mt-2 text-base sm:text-lg text-black/80 font-serif italic max-w-md mx-auto">
+        <p className="mt-1.5 text-sm sm:text-base text-black/80 font-serif italic max-w-xs mx-auto">
           Welcome to your private little sanctuary of words, memories, and sealed surprises.
         </p>
       </div>
 
-      {/* Main Glassmorphic Black Card */}
-      <div className="relative bg-black/90 backdrop-blur-2xl rounded-[36px] border border-white/15 p-6 sm:p-10 shadow-2xl text-white overflow-hidden">
-        {/* Subtle Ambient Glow Behind Card */}
-        <div className="absolute top-0 right-0 w-72 h-72 bg-[#F4C2C2]/15 rounded-full blur-3xl pointer-events-none -z-10" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#F4C2C2]/10 rounded-full blur-3xl pointer-events-none -z-10" />
-
-        <div className="flex flex-col md:flex-row items-center gap-8 sm:gap-10">
+      {/* Main Black Card (Hardware-accelerated 60fps, no heavy blurs) */}
+      <div className="relative bg-[#09090b] rounded-[32px] border border-[#F4C2C2]/40 p-5 sm:p-8 shadow-2xl text-white overflow-hidden transform-gpu">
+        
+        <div className="flex flex-col items-center text-center space-y-6">
           
-          {/* Mascot Image with Glassmorphic Frame */}
+          {/* Mascot Image with Clean Dark Frame */}
           <div className="relative shrink-0 group">
-            <div className="relative w-44 h-44 sm:w-52 sm:h-52 rounded-3xl overflow-hidden bg-zinc-950 p-2.5 border-2 border-[#F4C2C2]/40 shadow-2xl group-hover:scale-105 transition-transform duration-300">
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden bg-black p-2 border border-[#F4C2C2]/40 shadow-xl">
               <img
                 src="/assets/images/cat-love-letter.jpg"
                 alt="Cute Cat with Love Letter"
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-cover rounded-xl"
               />
-              <div className="absolute bottom-4 right-4 p-2 rounded-full bg-black/80 backdrop-blur-md border border-[#F4C2C2]/50 text-white shadow-md">
-                <Heart className="w-4 h-4 fill-[#F4C2C2] text-[#F4C2C2] animate-pulse" />
-              </div>
             </div>
 
-            {/* Little floating sticker badge */}
-            <div className="absolute -top-3 -left-3 bg-[#F4C2C2] text-black font-extrabold text-[11px] px-3 py-1 rounded-full shadow-lg border border-black transform -rotate-6">
+            {/* Floating sticker badge */}
+            <div className="absolute -top-2.5 -left-2 bg-[#F4C2C2] text-black font-extrabold text-[10px] px-2.5 py-0.5 rounded-full shadow-md border border-black transform -rotate-6">
               Official Postcat 💌
             </div>
           </div>
 
           {/* Welcome Message & Intro */}
-          <div className="flex-1 text-center md:text-left space-y-4">
-            <div className="inline-block">
-              <span className="text-xs uppercase tracking-widest font-bold text-[#F4C2C2]">
-                Most Minimalist Gift from {senderName}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-black text-white mt-1">
-                Your Personal "Open When" Box
-              </h2>
-            </div>
+          <div className="space-y-3">
+            <span className="text-[11px] uppercase tracking-widest font-bold text-[#F4C2C2] block">
+              Most Minimalist Gift from {senderName}
+            </span>
+            <h2 className="text-xl sm:text-2xl font-serif font-black text-white">
+              Your Personal "Open When" Box
+            </h2>
 
-            <p className="text-sm sm:text-base text-zinc-300 font-serif leading-relaxed">
+            <p className="text-xs sm:text-sm text-zinc-300 font-serif leading-relaxed max-w-sm mx-auto">
               Whenever the world gets too busy, distance feels too far, or you simply need to smile — 
               I have written letters for each of those moments. Each envelope is sealed until the exact moment calls for it.
             </p>
 
-            {/* Glassmorphic Metrics Widgets */}
-            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2">
-              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
-                <p className="text-xl sm:text-2xl font-black text-[#F4C2C2] font-serif">∞</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
-                  No. of times I thought of you
+            {/* Metrics Widgets */}
+            <div className="grid grid-cols-3 gap-2 pt-2 max-w-xs mx-auto">
+              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+                <p className="text-lg sm:text-xl font-black text-[#F4C2C2] font-serif">∞</p>
+                <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+                  Thought of you
                 </p>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
-                <p className="text-xl sm:text-2xl font-black text-white font-serif">{totalLetters}</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
-                  Letters Sealed
+              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+                <p className="text-lg sm:text-xl font-black text-white font-serif">{totalLetters}</p>
+                <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+                  Sealed Letters
                 </p>
               </div>
 
-              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-center">
-                <p className="text-xl sm:text-2xl font-black text-[#F4C2C2] font-serif">∞</p>
-                <p className="text-[10px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
+              <div className="bg-zinc-900 rounded-xl p-2.5 border border-zinc-800 text-center">
+                <p className="text-lg sm:text-xl font-black text-[#F4C2C2] font-serif">∞</p>
+                <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 leading-tight">
                   Hugs Ready
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
-              {/* Primary: Go to letters */}
+            <div className="pt-3 flex flex-col sm:flex-row items-center justify-center gap-2.5 max-w-xs mx-auto">
               <button
                 onClick={onEnterVault}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#F4C2C2] hover:bg-white text-black font-extrabold text-sm shadow-xl shadow-pink-900/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                className="w-full py-3.5 px-5 rounded-xl bg-[#F4C2C2] text-black font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"
               >
                 <span>Enter Your Letters Vault</span>
-                <ArrowRight className="w-4 h-4 ml-0.5" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
 
-              {/* Secondary: Information modal button */}
               <button
                 onClick={() => setShowInfoModal(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/20 backdrop-blur-md transition-all"
+                className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 text-white font-bold text-xs border border-zinc-800 flex items-center justify-center gap-1.5 active:scale-95 transition-transform"
               >
-                <BookOpen className="w-4 h-4 text-[#F4C2C2]" />
+                <BookOpen className="w-3.5 h-3.5 text-[#F4C2C2]" />
                 <span>About This Website</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Quick Footer Hug Trigger */}
-        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-400">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Vault Status: Ready & waiting for {partnerName}</span>
+        {/* Footer Hug Trigger */}
+        <div className="mt-6 pt-4 border-t border-zinc-850 flex items-center justify-between text-[11px] text-zinc-400">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span>Ready for {partnerName}</span>
           </div>
 
           <button
             onClick={handleSendHug}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-[#F4C2C2] border border-white/10 transition-colors"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-900 text-[#F4C2C2] border border-zinc-800 active:scale-95 transition-transform"
           >
             {hugSent ? (
               <>
-                <Heart className="w-3.5 h-3.5 fill-[#F4C2C2]" />
-                <span className="text-white font-bold">Hug Dispatched! ✨</span>
+                <Heart className="w-3 h-3 fill-[#F4C2C2]" />
+                <span className="text-white font-bold text-[10px]">Hug Sent! ✨</span>
               </>
             ) : (
               <>
-                <Send className="w-3.5 h-3.5" />
-                <span>Send {senderName} a Quick Hug</span>
+                <Send className="w-3 h-3" />
+                <span>Send a Hug</span>
               </>
             )}
           </button>

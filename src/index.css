@@ -20,23 +20,27 @@
 
 @keyframes floatHeart {
   0% {
-    transform: translateY(0) rotate(0deg) scale(0.8);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.85);
     opacity: 0;
   }
   15% {
-    opacity: 0.4;
+    opacity: 0.35;
   }
   50% {
-    transform: translateY(-50vh) rotate(15deg) scale(1);
-    opacity: 0.3;
-  }
-  85% {
+    transform: translate3d(0, -50vh, 0) rotate(12deg) scale(1);
     opacity: 0.25;
   }
+  85% {
+    opacity: 0.2;
+  }
   100% {
-    transform: translateY(-110vh) rotate(-15deg) scale(0.9);
+    transform: translate3d(0, -105vh, 0) rotate(-12deg) scale(0.9);
     opacity: 0;
   }
+}
+
+.will-change-transform {
+  will-change: transform;
 }
 
 .animate-float-heart {

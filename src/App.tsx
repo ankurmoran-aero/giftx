@@ -1,22 +1,19 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Letter, MoodCategory } from './types';
+import { useState, useEffect } from 'react';
+import { Letter } from './types';
 import { INITIAL_LETTERS, PARTNER_CONFIG } from './data/initialLetters';
 import { CuteDashboard } from './components/CuteDashboard';
-import { Header } from './components/Header';
-import { EnvelopeCard } from './components/EnvelopeCard';
 import { FocusedLetterView } from './components/FocusedLetterView';
 import { ShakeToOpenModal } from './components/ShakeToOpenModal';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
-import { AddLetterModal } from './components/AddLetterModal';
-import { Plus, Sparkles, Mail, Home, LayoutList, Layers } from 'lucide-react';
+import { ChevronLeft, LayoutList, X, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function App() {
   const [activeView, setActiveView] = useState<'dashboard' | 'letters'>('dashboard');
-  const [letterDisplayMode, setLetterDisplayMode] = useState<'one-by-one' | 'all-grid'>('one-by-one');
+  const [showAllDrawer, setShowAllDrawer] = useState<boolean>(false);
 
-  const [letters, setLetters] = useState<Letter[]>(() => {
+  const [letters] = useState<Letter[]>(() => {
     const saved = localStorage.getItem('giftx_letters');
     if (saved) {
       try {
@@ -45,31 +42,16 @@ export function App() {
   // State for reading the fully opened letter
   const [readLetter, setReadLetter] = useState<Letter | null>(null);
 
-  const [selectedCategory, setSelectedCategory] = useState<MoodCategory>('all');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
   // Persist opened status
   useEffect(() => {
     localStorage.setItem('giftx_opened_letters', JSON.stringify(openedLetterIds));
   }, [openedLetterIds]);
 
-  // Persist custom letters if added
-  useEffect(() => {
-    localStorage.setItem('giftx_letters', JSON.stringify(letters));
-  }, [letters]);
-
-  // Filter letters by selected mood category
-  const filteredLetters = useMemo(() => {
-    if (selectedCategory === 'all') return letters;
-    return letters.filter((l) => l.category === selectedCategory);
-  }, [letters, selectedCategory]);
-
-  // When she clicks on an envelope, initiate the Shake-to-Open stage
   const handleInitiateOpen = (letter: Letter) => {
+    setShowAllDrawer(false);
     setShakeLetter(letter);
   };
 
-  // When 3 shakes complete, mark as opened and display the Black Letter Reader
   const handleShakeComplete = (letter: Letter) => {
     setShakeLetter(null);
     setReadLetter(letter);
@@ -78,207 +60,184 @@ export function App() {
     }
   };
 
-  const handleAddLetter = (newLetter: Letter) => {
-    setLetters((prev) => [newLetter, ...prev]);
-  };
-
   const handleSpawnLove = () => {
     confetti({
-      particleCount: 55,
-      spread: 80,
-      origin: { y: 0.4 },
+      particleCount: 40,
+      spread: 60,
+      origin: { y: 0.3 },
       colors: ['#F4C2C2', '#000000', '#ffffff', '#fb7185'],
     });
   };
 
-  const handleEnterVault = () => {
-    setActiveView('letters');
-    setLetterDisplayMode('one-by-one');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <div className="min-h-screen bg-[#F4C2C2] text-black font-sans relative overflow-x-hidden selection:bg-black selection:text-[#F4C2C2]">
-      {/* Floating Ambient Hearts & Petals */}
+      {/* Lightweight 60fps Floating Ambient Hearts */}
       <FloatingHearts />
 
-      {/* Top Glassmorphic Navbar */}
-      <header className="sticky top-0 z-40 bg-[#F4C2C2]/85 backdrop-blur-md border-b border-black/10">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      {/* Clean Mobile-First Top Navbar */}
+      <header className="sticky top-0 z-40 bg-[#F4C2C2]/95 border-b border-black/10">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           
-          {/* Logo / Switch to Dashboard */}
-          <div 
-            onClick={() => {
-              setActiveView('dashboard');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex items-center gap-2 cursor-pointer group select-none"
-          >
-            <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-[#F4C2C2] shadow-md group-hover:scale-105 transition-transform overflow-hidden p-1 border border-black">
-              <img
-                src="/assets/images/cat-love-letter.jpg"
-                alt="Cat Love"
-                className="w-full h-full object-cover rounded-lg"
-              />
-            </div>
-            <div>
-              <span className="font-serif font-black text-lg text-black tracking-tight">
-                Hey Love :)
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation Pill Buttons */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          {activeView === 'letters' ? (
+            /* Left: Clean Back to Home button on Letters page */
             <button
               onClick={() => {
                 setActiveView('dashboard');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeView === 'dashboard'
-                  ? 'bg-black text-[#F4C2C2] shadow-md'
-                  : 'bg-black/10 hover:bg-black/20 text-black'
-              }`}
+              className="inline-flex items-center gap-1 text-xs font-bold text-black py-1 px-2.5 rounded-full bg-black/10 active:bg-black/20 transition-colors"
             >
-              <Home className="w-3.5 h-3.5" />
+              <ChevronLeft className="w-4 h-4" />
               <span>Home</span>
             </button>
-
-            <button
-              onClick={() => {
-                setActiveView('letters');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                activeView === 'letters'
-                  ? 'bg-black text-[#F4C2C2] shadow-md'
-                  : 'bg-black/10 hover:bg-black/20 text-black'
-              }`}
+          ) : (
+            /* Left: Cute Avatar & Greeting on Dashboard */
+            <div 
+              onClick={handleSpawnLove}
+              className="flex items-center gap-2 cursor-pointer select-none"
             >
-              <Mail className="w-3.5 h-3.5" />
-              <span>Letters ({letters.length})</span>
-            </button>
+              <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center text-[#F4C2C2] shadow-sm overflow-hidden p-0.5">
+                <img
+                  src="/assets/images/cat-love-letter.jpg"
+                  alt="Cat Love"
+                  className="w-full h-full object-cover rounded"
+                />
+              </div>
+              <span className="font-serif font-black text-base text-black tracking-tight">
+                Hey Love :)
+              </span>
+            </div>
+          )}
 
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-black text-[#F4C2C2] hover:bg-zinc-900 shadow-md transition-all active:scale-95"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Letter</span>
-            </button>
+          {/* Center Title on Letters Page */}
+          {activeView === 'letters' && (
+            <span className="font-serif font-black text-sm text-black tracking-tight">
+              Open When... 💌
+            </span>
+          )}
+
+          {/* Right Action */}
+          <div className="flex items-center gap-1.5">
+            {activeView === 'dashboard' ? (
+              <button
+                onClick={() => {
+                  setActiveView('letters');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform shadow-md"
+              >
+                <span>Letters</span>
+                <span className="text-[10px] bg-[#F4C2C2] text-black px-1.5 rounded-full">
+                  {letters.length}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAllDrawer(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black text-[#F4C2C2] active:scale-95 transition-transform"
+                title="All Letters"
+              >
+                <LayoutList className="w-3.5 h-3.5" />
+                <span>All ({letters.length})</span>
+              </button>
+            )}
 
             <button
               onClick={handleSpawnLove}
-              className="p-2 rounded-xl bg-black text-[#F4C2C2] hover:scale-105 transition-all shadow-md active:scale-95"
-              title="Shower with love"
-              aria-label="Shower with love"
+              className="p-1.5 rounded-full bg-black/10 text-black active:scale-90 transition-transform"
+              aria-label="Love Shower"
             >
-              <Sparkles className="w-4 h-4 text-[#F4C2C2]" />
+              <Sparkles className="w-3.5 h-3.5 text-black" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Page Content */}
-      <main className="relative z-10">
+      {/* Main Views */}
+      <main className="relative z-10 max-w-md mx-auto">
         {activeView === 'dashboard' ? (
-          /* First Page: Cute Dashboard with "Hey Love :)" and info button */
+          /* PAGE 1: CUTE DASHBOARD */
           <CuteDashboard
             partnerName={PARTNER_CONFIG.partnerName}
             senderName={PARTNER_CONFIG.senderName}
             totalLetters={letters.length}
-            onEnterVault={handleEnterVault}
+            onEnterVault={() => {
+              setActiveView('letters');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         ) : (
-          /* Second Page: Letters Experience */
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-24 animate-fade-in">
-            {/* Header & Mood Filter Tabs */}
-            <Header
-              partnerName={PARTNER_CONFIG.partnerName}
-              senderName={PARTNER_CONFIG.senderName}
-              anniversaryDate={PARTNER_CONFIG.anniversaryDate}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-              lettersCount={letters.length}
-              openedCount={openedLetterIds.length}
+          /* PAGE 2: CLEAN ONE-BY-ONE LETTER FLOW */
+          <div className="px-3 pt-2 pb-16">
+            <FocusedLetterView
+              letters={letters}
+              openedLetterIds={openedLetterIds}
+              onOpenLetter={handleInitiateOpen}
+              onViewAllLetters={() => setShowAllDrawer(true)}
             />
-
-            {/* View Mode Toggle: One-by-One vs All Envelopes */}
-            <div className="flex justify-center mb-6">
-              <div className="inline-flex items-center p-1 bg-black/90 rounded-2xl border border-black shadow-lg">
-                <button
-                  onClick={() => setLetterDisplayMode('one-by-one')}
-                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    letterDisplayMode === 'one-by-one'
-                      ? 'bg-[#F4C2C2] text-black shadow-sm'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>One by One</span>
-                </button>
-
-                <button
-                  onClick={() => setLetterDisplayMode('all-grid')}
-                  className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    letterDisplayMode === 'all-grid'
-                      ? 'bg-[#F4C2C2] text-black shadow-sm'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <LayoutList className="w-3.5 h-3.5" />
-                  <span>All Letters Vault</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Display Mode 1: One-by-One Focused Letters */}
-            {letterDisplayMode === 'one-by-one' ? (
-              <FocusedLetterView
-                letters={filteredLetters}
-                openedLetterIds={openedLetterIds}
-                onOpenLetter={handleInitiateOpen}
-                onViewAllLetters={() => setLetterDisplayMode('all-grid')}
-              />
-            ) : (
-              /* Display Mode 2: All Letters Grid Overview */
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-4">
-                {filteredLetters.map((letter) => (
-                  <EnvelopeCard
-                    key={letter.id}
-                    letter={letter}
-                    isOpened={openedLetterIds.includes(letter.id)}
-                    onOpen={handleInitiateOpen}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Empty State */}
-            {filteredLetters.length === 0 && (
-              <div className="text-center py-16 bg-black text-white rounded-3xl border border-black max-w-md mx-auto my-8 p-8 shadow-xl">
-                <span className="text-3xl">💌</span>
-                <h3 className="font-serif font-bold text-white text-base mt-2">No letters in this mood</h3>
-                <p className="text-xs text-zinc-400 mt-1">Try switching to "All Letters" or add one for this moment.</p>
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className="mt-4 px-4 py-2 bg-[#F4C2C2] text-black rounded-xl text-xs font-bold hover:bg-white transition-colors"
-                >
-                  View All Letters
-                </button>
-              </div>
-            )}
           </div>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-black/10 py-8 text-center text-xs text-black/70 font-serif">
-        <p>Made with all my heart for {PARTNER_CONFIG.partnerName} • Always only a letter away</p>
-      </footer>
+      {/* Drawer: All Letters Vault (Opens only when she taps "All") */}
+      {showAllDrawer && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex flex-col justify-end animate-fade-in">
+          <div className="bg-[#09090b] text-white rounded-t-3xl border-t-2 border-[#F4C2C2]/50 max-h-[85vh] flex flex-col p-5 shadow-2xl">
+            
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+              <div>
+                <h3 className="font-serif font-black text-lg text-white">All Letters</h3>
+                <p className="text-xs text-[#F4C2C2]">{openedLetterIds.length} of {letters.length} unsealed</p>
+              </div>
+              <button
+                onClick={() => setShowAllDrawer(false)}
+                className="p-1.5 rounded-full bg-zinc-900 text-zinc-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-      {/* Modal 1: Shake-To-Open Interactive Stage */}
+            {/* Scrollable List of Letters */}
+            <div className="overflow-y-auto py-4 space-y-3 flex-1">
+              {letters.map((letter, idx) => {
+                const isOpened = openedLetterIds.includes(letter.id);
+                return (
+                  <div
+                    key={letter.id}
+                    onClick={() => handleInitiateOpen(letter)}
+                    className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-[#F4C2C2]/60 active:scale-[0.98] transition-all flex items-center justify-between cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="w-8 h-8 rounded-full bg-[#F4C2C2] text-black font-bold flex items-center justify-center text-xs shrink-0">
+                        {letter.sealEmoji || '💌'}
+                      </span>
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-[#F4C2C2] uppercase font-bold tracking-wider block">
+                          Letter {idx + 1}
+                        </span>
+                        <h4 className="font-serif font-bold text-white text-sm truncate">
+                          {letter.title}
+                        </h4>
+                      </div>
+                    </div>
+
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ml-2 ${
+                      isOpened 
+                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' 
+                        : 'bg-zinc-900 text-[#F4C2C2] border border-[#F4C2C2]/30'
+                    }`}>
+                      {isOpened ? 'Read' : 'Sealed'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 1: 3-Stage Shake-To-Open Interactive Envelope */}
       <ShakeToOpenModal
         letter={shakeLetter}
         isOpen={Boolean(shakeLetter)}
@@ -290,13 +249,6 @@ export function App() {
       <LetterModal
         letter={readLetter}
         onClose={() => setReadLetter(null)}
-      />
-
-      {/* Modal 3: Add New Letter */}
-      <AddLetterModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAdd={handleAddLetter}
       />
     </div>
   );
