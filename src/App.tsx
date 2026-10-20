@@ -5,6 +5,7 @@ import { DAILY_MAIL } from './data/dailyMail';
 import { CuteDashboard } from './components/CuteDashboard';
 import { LetterScrollView } from './components/LetterScrollView';
 import { DailyMailbox } from './components/DailyMailbox';
+import { MailAlertModal } from './components/MailAlertModal';
 import { ShakeToOpenModal } from './components/ShakeToOpenModal';
 import { LetterModal } from './components/LetterModal';
 import { FloatingHearts } from './components/FloatingHearts';
@@ -63,6 +64,35 @@ export function App() {
     setMails((prev) => prev.filter((m) => m.id !== id));
   };
 
+  // Track seen/read mail IDs to power the new mail alert popup
+  const [seenMailIds, setSeenMailIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem('giftx_seen_mail_ids');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return []; }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('giftx_seen_mail_ids', JSON.stringify(seenMailIds));
+  }, [seenMailIds]);
+
+  const deliveredMails = mails.filter((m) => new Date() >= new Date(m.deployAt));
+  const newUnreadMails = deliveredMails.filter((m) => !seenMailIds.includes(m.id));
+  const latestNewMail = newUnreadMails.length > 0 ? newUnreadMails[0] : null;
+
+  const [showMailAlert, setShowMailAlert] = useState<boolean>(false);
+
+  // Trigger alert popup when on dashboard if new unread mail exists
+  useEffect(() => {
+    if (newUnreadMails.length > 0 && activeView === 'dashboard') {
+      const timer = setTimeout(() => {
+        setShowMailAlert(true);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [newUnreadMails.length, activeView]);
+
   const [shakeLetter, setShakeLetter] = useState<Letter | null>(null);
   const [readLetter, setReadLetter] = useState<Letter | null>(null);
 
@@ -109,11 +139,19 @@ export function App() {
               </div>
               <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => setActiveView('mail')}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black/10 text-black active:scale-95 transition-transform"
+                  onClick={() => {
+                    setActiveView('mail');
+                    if (latestNewMail) {
+                      setSeenMailIds((prev) => [...prev, latestNewMail.id]);
+                    }
+                  }}
+                  className="relative inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-black/10 text-black active:scale-95 transition-transform"
                 >
                   <Mail className="w-3.5 h-3.5" />
                   <span>Mail</span>
+                  {newUnreadMails.length > 0 && (
+                    <span className="w-2.5 h-2.5 rounded-full bg-pink-500 absolute -top-0.5 -right-0.5 ring-2 ring-[#F4C2C2] animate-pulse" />
+                  )}
                 </button>
                 <button
                   onClick={() => setActiveView('letters')}
@@ -252,6 +290,23 @@ export function App() {
       )}
 
       {/* ── MODALS ───────────────────────────────────────── */}
+      <MailAlertModal
+        mail={latestNewMail}
+        isOpen={showMailAlert && Boolean(latestNewMail)}
+        onClose={() => {
+          setShowMailAlert(false);
+          if (latestNewMail) {
+            setSeenMailIds((prev) => [...prev, latestNewMail.id]);
+          }
+        }}
+        onOpenMailbox={() => {
+          setShowMailAlert(false);
+          if (latestNewMail) {
+            setSeenMailIds((prev) => [...prev, latestNewMail.id]);
+          }
+          setActiveView('mail');
+        }}
+      />
       <ShakeToOpenModal
         letter={shakeLetter}
         isOpen={Boolean(shakeLetter)}
